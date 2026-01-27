@@ -59,8 +59,20 @@ export function MusicPlayer({
                 "--slider-track": themeColors.border,
                 "--slider-range": themeColors.accentPrimary,
                 "--slider-thumb": themeColors.accentHover,
+                color: themeColors.textPrimary,
+                boxShadow: "0 0 20px rgba(123, 44, 191, 0.3)",
               } as React.CSSProperties
             }
+
+            onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+              e.currentTarget.style.boxShadow =
+                "0 0 30px rgba(157, 78, 221, 0.5)";
+            }}
+            onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+              e.currentTarget.style.boxShadow =
+                "0 0 20px rgba(123, 44, 191, 0.3)";
+            }}
+
           />
           <div className="flex justify-between mt-1">
             <span
@@ -118,12 +130,12 @@ export function MusicPlayer({
               className="transition-all duration-200 hover:scale-110"
               style={{ color: themeColors.textSecondary }}
               onMouseEnter={(e) =>
-                (e.currentTarget.style.color =
-                  themeColors.textPrimary)
+              (e.currentTarget.style.color =
+                themeColors.textPrimary)
               }
               onMouseLeave={(e) =>
-                (e.currentTarget.style.color =
-                  themeColors.textSecondary)
+              (e.currentTarget.style.color =
+                themeColors.textSecondary)
               }
             >
               <SkipBack className="w-5 h-5" />
@@ -161,12 +173,12 @@ export function MusicPlayer({
               className="transition-all duration-200 hover:scale-110"
               style={{ color: themeColors.textSecondary }}
               onMouseEnter={(e) =>
-                (e.currentTarget.style.color =
-                  themeColors.textPrimary)
+              (e.currentTarget.style.color =
+                themeColors.textPrimary)
               }
               onMouseLeave={(e) =>
-                (e.currentTarget.style.color =
-                  themeColors.textSecondary)
+              (e.currentTarget.style.color =
+                themeColors.textSecondary)
               }
             >
               <SkipForward className="w-5 h-5" />
@@ -191,8 +203,19 @@ export function MusicPlayer({
                     "--slider-track": themeColors.border,
                     "--slider-range": themeColors.accentPrimary,
                     "--slider-thumb": themeColors.accentHover,
+                    color: themeColors.textPrimary,
+                    boxShadow: "0 0 20px rgba(123, 44, 191, 0.3)",
                   } as React.CSSProperties
                 }
+
+                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.currentTarget.style.boxShadow =
+                    "0 0 30px rgba(157, 78, 221, 0.5)";
+                }}
+                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                  e.currentTarget.style.boxShadow =
+                    "0 0 20px rgba(123, 44, 191, 0.3)";
+                }}
               />
             </div>
 
@@ -201,12 +224,12 @@ export function MusicPlayer({
               className="transition-all duration-200 hover:scale-110"
               style={{ color: themeColors.textSecondary }}
               onMouseEnter={(e) =>
-                (e.currentTarget.style.color =
-                  themeColors.textPrimary)
+              (e.currentTarget.style.color =
+                themeColors.textPrimary)
               }
               onMouseLeave={(e) =>
-                (e.currentTarget.style.color =
-                  themeColors.textSecondary)
+              (e.currentTarget.style.color =
+                themeColors.textSecondary)
               }
             >
               <ListMusic className="w-5 h-5" />
