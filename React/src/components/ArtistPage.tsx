@@ -71,40 +71,26 @@ const artistData = {
 export function ArtistPage({
   onNavigate,
   artistId = 1,
+  colors,
 }: ArtistPageProps) {
+  const themeColors = colors || defaultColors;
+
   const artist =
-    artistData[artistId as keyof typeof artistData] ||
-    artistData[1];
+    artistData[artistId as keyof typeof artistData] || artistData[1];
 
   return (
     <div
       className="min-h-screen pb-32"
-      style={{ backgroundColor: "#0F0A1A" }}
+      style={{ backgroundColor: themeColors.bgPrimary }}
     >
       {/* Header */}
-      <div className="container mx-auto px-4 py-6">
-        <button
-          onClick={() => onNavigate("home")}
-          className="flex items-center gap-2 mb-6 transition-colors"
-          style={{ color: "#B0A3CC" }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.color = "#E8E1FF")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.color = "#B0A3CC")
-          }
-        >
-          <ArrowLeft className="w-5 h-5" />
-          Volver
-        </button>
-      </div>
+      
 
       {/* Artist Header */}
       <div
-        className="relative pb-8"
+        className="relative pb-8 pt-6 mb-8"
         style={{
-          background:
-            "linear-gradient(to bottom, #1A0F2E 0%, #0F0A1A 100%)",
+          background: `linear-gradient(to bottom, ${themeColors.bgSecondary} 0%, ${themeColors.bgPrimary} 100%)`,
         }}
       >
         <div className="container mx-auto px-4">
@@ -118,7 +104,7 @@ export function ArtistPage({
             </div>
 
             <div className="flex-1">
-              <h1 className="mb-4" style={{ color: "#E8E1FF" }}>
+              <h1 className="mb-4" style={{ color: themeColors.textPrimary }}>
                 {artist.name}
               </h1>
 
@@ -128,8 +114,8 @@ export function ArtistPage({
                     key={g}
                     className="rounded-lg"
                     style={{
-                      backgroundColor: "#7B2CBF",
-                      color: "#E8E1FF",
+                      backgroundColor: themeColors.accentPrimary,
+                      color: themeColors.textPrimary,
                     }}
                   >
                     {g}
@@ -137,7 +123,7 @@ export function ArtistPage({
                 ))}
               </div>
 
-              <p className="mb-4" style={{ color: "#B0A3CC" }}>
+              <p className="mb-4" style={{ color: themeColors.textSecondary }}>
                 {artist.followers} seguidores
               </p>
 
@@ -146,17 +132,15 @@ export function ArtistPage({
                   size="lg"
                   className="rounded-xl transition-all duration-300 hover:scale-105"
                   style={{
-                    backgroundColor: "#7B2CBF",
-                    color: "#E8E1FF",
+                    backgroundColor: themeColors.accentPrimary,
+                    color: themeColors.textPrimary,
                   }}
-                  onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) =>
-                    (e.currentTarget.style.backgroundColor =
-                      "#9D4EDD")
-                  }
-                  onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) =>
-                    (e.currentTarget.style.backgroundColor =
-                      "#7B2CBF")
-                  }
+                  onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                    e.currentTarget.style.backgroundColor = themeColors.accentHover;
+                  }}
+                  onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                    e.currentTarget.style.backgroundColor = themeColors.accentPrimary;
+                  }}
                 >
                   <Play className="w-5 h-5 mr-2 fill-current" />
                   Reproducir
@@ -167,19 +151,17 @@ export function ArtistPage({
                   variant="outline"
                   className="rounded-xl transition-all duration-300 hover:scale-105"
                   style={{
-                    borderColor: "#7B2CBF",
-                    color: "#7B2CBF",
+                    borderColor: themeColors.accentPrimary,
+                    color: themeColors.accentPrimary,
                     backgroundColor: "transparent",
                   }}
                   onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
-                    e.currentTarget.style.backgroundColor =
-                      "#7B2CBF";
-                    e.currentTarget.style.color = "#E8E1FF";
+                    e.currentTarget.style.backgroundColor = themeColors.accentPrimary;
+                    e.currentTarget.style.color = themeColors.textPrimary;
                   }}
                   onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
-                    e.currentTarget.style.backgroundColor =
-                      "transparent";
-                    e.currentTarget.style.color = "#7B2CBF";
+                    e.currentTarget.style.backgroundColor = "transparent";
+                    e.currentTarget.style.color = themeColors.accentPrimary;
                   }}
                 >
                   <UserPlus className="w-5 h-5 mr-2" />
@@ -197,28 +179,28 @@ export function ArtistPage({
           <TabsList
             className="mb-8 w-full md:w-auto"
             style={{
-              backgroundColor: "#1A0F2E",
-              borderColor: "#3E2A66",
+              backgroundColor: themeColors.bgSecondary,
+              borderColor: themeColors.border,
             }}
           >
             <TabsTrigger
               value="songs"
-              className="data-[state=active]:bg-[#7B2CBF] data-[state=active]:text-[#E8E1FF]"
-              style={{ color: "#B0A3CC" }}
+              className={`data-[state=active]:bg-[${themeColors.accentPrimary}] data-[state=active]:text-[${themeColors.textPrimary}]`}
+              style={{ color: themeColors.textPrimary }}
             >
               Canciones
             </TabsTrigger>
             <TabsTrigger
               value="albums"
-              className="data-[state=active]:bg-[#7B2CBF] data-[state=active]:text-[#E8E1FF]"
-              style={{ color: "#B0A3CC" }}
+              className={`data-[state=active]:bg-[${themeColors.accentPrimary}] data-[state=active]:text-[${themeColors.textPrimary}]`}
+              style={{ color: themeColors.textPrimary }}
             >
               Álbumes
             </TabsTrigger>
             <TabsTrigger
               value="about"
-              className="data-[state=active]:bg-[#7B2CBF] data-[state=active]:text-[#E8E1FF]"
-              style={{ color: "#B0A3CC" }}
+              className={`data-[state=active]:bg-[${themeColors.accentPrimary}] data-[state=active]:text-[${themeColors.textPrimary}]`}
+              style={{ color: themeColors.textPrimary }}
             >
               Sobre mí
             </TabsTrigger>
@@ -231,37 +213,37 @@ export function ArtistPage({
                   key={song.id}
                   className="p-4 rounded-xl flex items-center gap-4 cursor-pointer transition-all duration-300 hover:scale-[1.02]"
                   style={{
-                    backgroundColor: "#1A0F2E",
-                    border: "1px solid #3E2A66",
+                    backgroundColor: themeColors.bgSecondary,
+                    border: `1px solid ${themeColors.border}`,
                   }}
                 >
                   <span
                     className="w-8 text-center"
-                    style={{ color: "#B0A3CC" }}
+                    style={{ color: themeColors.textSecondary }}
                   >
                     {index + 1}
                   </span>
                   <div
                     className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
-                    style={{ backgroundColor: "#3E2A66" }}
+                    style={{ backgroundColor: themeColors.border }}
                   >
                     <Music2
                       className="w-6 h-6"
-                      style={{ color: "#9D4EDD" }}
+                      style={{ color: themeColors.accentHover }}
                     />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4
                       className="mb-1"
-                      style={{ color: "#E8E1FF" }}
+                      style={{ color: themeColors.textPrimary }}
                     >
                       {song.title}
                     </h4>
-                    <p style={{ color: "#B0A3CC" }}>
+                    <p style={{ color: themeColors.textSecondary }}>
                       {song.plays} reproducciones
                     </p>
                   </div>
-                  <span style={{ color: "#B0A3CC" }}>
+                  <span style={{ color: themeColors.textSecondary }}>
                     {song.duration}
                   </span>
                 </div>
@@ -276,26 +258,26 @@ export function ArtistPage({
                   key={album.id}
                   className="p-6 rounded-xl cursor-pointer transition-all duration-300 hover:scale-105"
                   style={{
-                    backgroundColor: "#1A0F2E",
-                    border: "1px solid #3E2A66",
+                    backgroundColor: themeColors.bgSecondary,
+                    border: `1px solid ${themeColors.border}`,
                   }}
                 >
                   <div
                     className="w-full aspect-square rounded-lg mb-4 flex items-center justify-center"
-                    style={{ backgroundColor: "#3E2A66" }}
+                    style={{ backgroundColor: themeColors.border }}
                   >
                     <Music2
                       className="w-16 h-16"
-                      style={{ color: "#9D4EDD" }}
+                      style={{ color: themeColors.accentHover }}
                     />
                   </div>
                   <h4
                     className="mb-2"
-                    style={{ color: "#E8E1FF" }}
+                    style={{ color: themeColors.textPrimary }}
                   >
                     {album.title}
                   </h4>
-                  <p style={{ color: "#B0A3CC" }}>
+                  <p style={{ color: themeColors.textSecondary }}>
                     {album.year} • {album.tracks} canciones
                   </p>
                 </div>
@@ -307,15 +289,15 @@ export function ArtistPage({
             <div
               className="p-6 rounded-xl"
               style={{
-                backgroundColor: "#1A0F2E",
-                border: "1px solid #3E2A66",
+                backgroundColor: themeColors.bgSecondary,
+                border: `1px solid ${themeColors.border}`,
               }}
             >
-              <h3 className="mb-4" style={{ color: "#E8E1FF" }}>
+              <h3 className="mb-4" style={{ color: themeColors.textPrimary }}>
                 Sobre el artista
               </h3>
               <p
-                style={{ color: "#B0A3CC", lineHeight: "1.8" }}
+                style={{ color: themeColors.textSecondary, lineHeight: "1.8" }}
               >
                 {artist.bio}
               </p>

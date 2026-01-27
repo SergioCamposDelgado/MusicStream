@@ -207,12 +207,11 @@ export function AdminPanel({
       users.map((user) =>
         user.id === userId
           ? {
-              ...user,
-              status:
-                user.status === "active" ? "blocked" : "active",
-            }
-          : user,
-      ),
+            ...user,
+            status: user.status === "active" ? "blocked" : "active",
+          }
+          : user
+      )
     );
   };
 
@@ -224,20 +223,16 @@ export function AdminPanel({
   const handleApproveSong = (songId: number) => {
     setSongs(
       songs.map((song) =>
-        song.id === songId
-          ? { ...song, status: "approved" }
-          : song,
-      ),
+        song.id === songId ? { ...song, status: "approved" } : song
+      )
     );
   };
 
   const handleRejectSong = (songId: number) => {
     setSongs(
       songs.map((song) =>
-        song.id === songId
-          ? { ...song, status: "rejected" }
-          : song,
-      ),
+        song.id === songId ? { ...song, status: "rejected" } : song
+      )
     );
   };
 
@@ -248,22 +243,14 @@ export function AdminPanel({
 
   const filteredUsers = users.filter(
     (user) =>
-      user.name
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      user.email
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()),
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const filteredSongs = songs.filter(
     (song) =>
-      song.title
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      song.artist
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()),
+      song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      song.artist.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -277,15 +264,14 @@ export function AdminPanel({
           <div className="flex items-center gap-3 mb-2">
             <Shield
               className="w-8 h-8"
-              style={{ color: "#7B2CBF" }}
+              style={{ color: themeColors.accentPrimary }}
             />
-            <h2 style={{ color: "#E8E1FF" }}>
+            <h2 style={{ color: themeColors.textPrimary }}>
               Panel de Administración
             </h2>
           </div>
-          <p style={{ color: "#B0A3CC" }}>
-            Gestiona usuarios, canciones y contenido de la
-            plataforma
+          <p style={{ color: themeColors.textSecondary }}>
+            Gestiona usuarios, canciones y contenido de la plataforma
           </p>
         </div>
 
@@ -293,29 +279,25 @@ export function AdminPanel({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {platformStats.map((stat, index) => {
             const Icon = stat.icon;
+            const isPositive = stat.change.startsWith("+");
             return (
               <div
                 key={index}
-                className="rounded-xl p-4 transition-all duration-300 hover:scale-105"
+                className="rounded-xl p-4 transition-all duration-300 hover:scale-105 hover:shadow-lg"
                 style={{
-                  backgroundColor: "#1A0F2E",
-                  border: "1px solid #3E2A66",
+                  backgroundColor: themeColors.bgSecondary,
+                  border: `1px solid ${themeColors.border}`,
                 }}
               >
                 <div className="flex items-center justify-between mb-3">
-                  <Icon
-                    className="w-6 h-6"
-                    style={{ color: stat.color }}
-                  />
+                  <Icon className="w-6 h-6" style={{ color: stat.color }} />
                   <Badge
                     style={{
-                      backgroundColor: stat.change.startsWith(
-                        "+",
-                      )
-                        ? "#7B2CBF33"
+                      backgroundColor: isPositive
+                        ? `${themeColors.accentPrimary}33`
                         : "#d4183d33",
-                      color: stat.change.startsWith("+")
-                        ? "#9D4EDD"
+                      color: isPositive
+                        ? themeColors.accentHover
                         : "#d4183d",
                       border: "none",
                     }}
@@ -324,19 +306,14 @@ export function AdminPanel({
                   </Badge>
                 </div>
                 <div
-                  className="mb-1"
-                  style={{
-                    color: "#E8E1FF",
-                    fontSize: "1.5rem",
-                  }}
+                  className="mb-1 text-2xl font-bold"
+                  style={{ color: themeColors.textPrimary }}
                 >
                   {stat.value}
                 </div>
                 <p
-                  style={{
-                    color: "#B0A3CC",
-                    fontSize: "0.75rem",
-                  }}
+                  className="text-sm"
+                  style={{ color: themeColors.textSecondary }}
                 >
                   {stat.label}
                 </p>
@@ -350,30 +327,30 @@ export function AdminPanel({
           <TabsList
             className="w-full md:w-auto rounded-xl mb-6"
             style={{
-              backgroundColor: "#1A0F2E",
-              border: "1px solid #3E2A66",
+              backgroundColor: themeColors.bgSecondary,
+              border: `1px solid ${themeColors.border}`,
             }}
           >
             <TabsTrigger
               value="users"
-              className="rounded-lg data-[state=active]:bg-[#7B2CBF] data-[state=active]:text-[#E8E1FF]"
-              style={{ color: "#B0A3CC" }}
+              className={`rounded-lg data-[state=active]:bg-[${themeColors.accentPrimary}] data-[state=active]:text-[${themeColors.textPrimary}] hover:bg-[${themeColors.bgTertiary}] transition-colors`}
+              style={{ color: themeColors.textPrimary }}
             >
               <Users className="w-4 h-4 mr-2" />
               Usuarios
             </TabsTrigger>
             <TabsTrigger
               value="songs"
-              className="rounded-lg data-[state=active]:bg-[#7B2CBF] data-[state=active]:text-[#E8E1FF]"
-              style={{ color: "#B0A3CC" }}
+              className={`rounded-lg data-[state=active]:bg-[${themeColors.accentPrimary}] data-[state=active]:text-[${themeColors.textPrimary}] hover:bg-[${themeColors.bgTertiary}] transition-colors`}
+              style={{ color: themeColors.textPrimary }}
             >
               <Music2 className="w-4 h-4 mr-2" />
               Canciones
             </TabsTrigger>
             <TabsTrigger
               value="stats"
-              className="rounded-lg data-[state=active]:bg-[#7B2CBF] data-[state=active]:text-[#E8E1FF]"
-              style={{ color: "#B0A3CC" }}
+              className={`rounded-lg data-[state=active]:bg-[${themeColors.accentPrimary}] data-[state=active]:text-[${themeColors.textPrimary}] hover:bg-[${themeColors.bgTertiary}] transition-colors`}
+              style={{ color: themeColors.textPrimary }}
             >
               <BarChart3 className="w-4 h-4 mr-2" />
               Estadísticas
@@ -383,28 +360,26 @@ export function AdminPanel({
           {/* Users Tab */}
           <TabsContent value="users">
             <div
-              className="rounded-xl p-6"
+              className="rounded-xl p-6 transition-all duration-300"
               style={{
-                backgroundColor: "#1A0F2E",
-                border: "1px solid #3E2A66",
+                backgroundColor: themeColors.bgSecondary,
+                border: `1px solid ${themeColors.border}`,
               }}
             >
               <div className="flex items-center justify-between mb-6">
-                <h3 style={{ color: "#E8E1FF" }}>
+                <h3 style={{ color: themeColors.textPrimary }}>
                   Gestión de Usuarios
                 </h3>
                 <Input
                   type="text"
                   placeholder="Buscar usuarios..."
                   value={searchQuery}
-                  onChange={(e) =>
-                    setSearchQuery(e.target.value)
-                  }
-                  className="max-w-xs rounded-lg"
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="max-w-xs rounded-lg transition-colors focus:border-[${themeColors.accentPrimary}] focus:ring-[${themeColors.accentPrimary}]"
                   style={{
-                    backgroundColor: "#0F0A1A",
-                    borderColor: "#3E2A66",
-                    color: "#E8E1FF",
+                    backgroundColor: themeColors.bgPrimary,
+                    borderColor: themeColors.border,
+                    color: themeColors.textPrimary,
                   }}
                 />
               </div>
@@ -412,28 +387,26 @@ export function AdminPanel({
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow
-                      style={{ borderColor: "#3E2A66" }}
-                    >
-                      <TableHead style={{ color: "#B0A3CC" }}>
+                    <TableRow style={{ borderColor: themeColors.border }}>
+                      <TableHead style={{ color: themeColors.textSecondary }}>
                         Usuario
                       </TableHead>
-                      <TableHead style={{ color: "#B0A3CC" }}>
+                      <TableHead style={{ color: themeColors.textSecondary }}>
                         Email
                       </TableHead>
-                      <TableHead style={{ color: "#B0A3CC" }}>
+                      <TableHead style={{ color: themeColors.textSecondary }}>
                         Rol
                       </TableHead>
-                      <TableHead style={{ color: "#B0A3CC" }}>
+                      <TableHead style={{ color: themeColors.textSecondary }}>
                         Estado
                       </TableHead>
-                      <TableHead style={{ color: "#B0A3CC" }}>
+                      <TableHead style={{ color: themeColors.textSecondary }}>
                         Canciones
                       </TableHead>
-                      <TableHead style={{ color: "#B0A3CC" }}>
+                      <TableHead style={{ color: themeColors.textSecondary }}>
                         Fecha Registro
                       </TableHead>
-                      <TableHead style={{ color: "#B0A3CC" }}>
+                      <TableHead style={{ color: themeColors.textSecondary }}>
                         Acciones
                       </TableHead>
                     </TableRow>
@@ -442,12 +415,13 @@ export function AdminPanel({
                     {filteredUsers.map((user) => (
                       <TableRow
                         key={user.id}
-                        style={{ borderColor: "#3E2A66" }}
+                        className="transition-colors hover:bg-[${themeColors.bgTertiary}80]"
+                        style={{ borderColor: themeColors.border }}
                       >
-                        <TableCell style={{ color: "#E8E1FF" }}>
+                        <TableCell style={{ color: themeColors.textPrimary }}>
                           {user.name}
                         </TableCell>
-                        <TableCell style={{ color: "#B0A3CC" }}>
+                        <TableCell style={{ color: themeColors.textSecondary }}>
                           {user.email}
                         </TableCell>
                         <TableCell>
@@ -455,12 +429,12 @@ export function AdminPanel({
                             style={{
                               backgroundColor:
                                 user.role === "Artista"
-                                  ? "#7B2CBF33"
-                                  : "#3E2A6633",
+                                  ? `${themeColors.accentPrimary}33`
+                                  : `${themeColors.border}33`,
                               color:
                                 user.role === "Artista"
-                                  ? "#9D4EDD"
-                                  : "#B0A3CC",
+                                  ? themeColors.accentHover
+                                  : themeColors.textSecondary,
                               border: "none",
                             }}
                           >
@@ -472,40 +446,36 @@ export function AdminPanel({
                             style={{
                               backgroundColor:
                                 user.status === "active"
-                                  ? "#7B2CBF33"
+                                  ? `${themeColors.accentPrimary}33`
                                   : "#d4183d33",
                               color:
                                 user.status === "active"
-                                  ? "#9D4EDD"
+                                  ? themeColors.accentHover
                                   : "#d4183d",
                               border: "none",
                             }}
                           >
-                            {user.status === "active"
-                              ? "Activo"
-                              : "Bloqueado"}
+                            {user.status === "active" ? "Activo" : "Bloqueado"}
                           </Badge>
                         </TableCell>
-                        <TableCell style={{ color: "#B0A3CC" }}>
+                        <TableCell style={{ color: themeColors.textSecondary }}>
                           {user.songs}
                         </TableCell>
-                        <TableCell style={{ color: "#B0A3CC" }}>
+                        <TableCell style={{ color: themeColors.textSecondary }}>
                           {user.joinDate}
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <Button
                               size="sm"
-                              onClick={() =>
-                                handleBlockUser(user.id)
-                              }
-                              className="rounded-lg"
+                              onClick={() => handleBlockUser(user.id)}
+                              className="rounded-lg transition-all hover:scale-105 hover:bg-red-600"
                               style={{
                                 backgroundColor:
                                   user.status === "active"
                                     ? "#d4183d"
-                                    : "#7B2CBF",
-                                color: "#E8E1FF",
+                                    : themeColors.accentPrimary,
+                                color: themeColors.textPrimary,
                               }}
                             >
                               <Ban className="w-3 h-3" />
@@ -519,10 +489,10 @@ export function AdminPanel({
                                   id: user.id,
                                 })
                               }
-                              className="rounded-lg"
+                              className="rounded-lg transition-all hover:scale-105 hover:bg-[${themeColors.border}]"
                               style={{
-                                backgroundColor: "#3E2A66",
-                                color: "#E8E1FF",
+                                backgroundColor: themeColors.border,
+                                color: themeColors.textPrimary,
                               }}
                             >
                               <Trash2 className="w-3 h-3" />
@@ -540,28 +510,26 @@ export function AdminPanel({
           {/* Songs Tab */}
           <TabsContent value="songs">
             <div
-              className="rounded-xl p-6"
+              className="rounded-xl p-6 transition-all duration-300"
               style={{
-                backgroundColor: "#1A0F2E",
-                border: "1px solid #3E2A66",
+                backgroundColor: themeColors.bgSecondary,
+                border: `1px solid ${themeColors.border}`,
               }}
             >
               <div className="flex items-center justify-between mb-6">
-                <h3 style={{ color: "#E8E1FF" }}>
+                <h3 style={{ color: themeColors.textPrimary }}>
                   Gestión de Canciones
                 </h3>
                 <Input
                   type="text"
                   placeholder="Buscar canciones..."
                   value={searchQuery}
-                  onChange={(e) =>
-                    setSearchQuery(e.target.value)
-                  }
-                  className="max-w-xs rounded-lg"
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="max-w-xs rounded-lg transition-colors focus:border-[${themeColors.accentPrimary}] focus:ring-[${themeColors.accentPrimary}]"
                   style={{
-                    backgroundColor: "#0F0A1A",
-                    borderColor: "#3E2A66",
-                    color: "#E8E1FF",
+                    backgroundColor: themeColors.bgPrimary,
+                    borderColor: themeColors.border,
+                    color: themeColors.textPrimary,
                   }}
                 />
               </div>
@@ -569,28 +537,26 @@ export function AdminPanel({
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow
-                      style={{ borderColor: "#3E2A66" }}
-                    >
-                      <TableHead style={{ color: "#B0A3CC" }}>
+                    <TableRow style={{ borderColor: themeColors.border }}>
+                      <TableHead style={{ color: themeColors.textSecondary }}>
                         Canción
                       </TableHead>
-                      <TableHead style={{ color: "#B0A3CC" }}>
+                      <TableHead style={{ color: themeColors.textSecondary }}>
                         Artista
                       </TableHead>
-                      <TableHead style={{ color: "#B0A3CC" }}>
+                      <TableHead style={{ color: themeColors.textSecondary }}>
                         Género
                       </TableHead>
-                      <TableHead style={{ color: "#B0A3CC" }}>
+                      <TableHead style={{ color: themeColors.textSecondary }}>
                         Estado
                       </TableHead>
-                      <TableHead style={{ color: "#B0A3CC" }}>
+                      <TableHead style={{ color: themeColors.textSecondary }}>
                         Reproducciones
                       </TableHead>
-                      <TableHead style={{ color: "#B0A3CC" }}>
+                      <TableHead style={{ color: themeColors.textSecondary }}>
                         Fecha Subida
                       </TableHead>
-                      <TableHead style={{ color: "#B0A3CC" }}>
+                      <TableHead style={{ color: themeColors.textSecondary }}>
                         Acciones
                       </TableHead>
                     </TableRow>
@@ -599,30 +565,31 @@ export function AdminPanel({
                     {filteredSongs.map((song) => (
                       <TableRow
                         key={song.id}
-                        style={{ borderColor: "#3E2A66" }}
+                        className="transition-colors hover:bg-[${themeColors.bgTertiary}80]"
+                        style={{ borderColor: themeColors.border }}
                       >
                         <TableCell>
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
+                            <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-muted">
                               <ImageWithFallback
                                 src={song.image}
                                 alt={song.title}
                                 className="w-full h-full object-cover"
                               />
                             </div>
-                            <span style={{ color: "#E8E1FF" }}>
+                            <span style={{ color: themeColors.textPrimary }}>
                               {song.title}
                             </span>
                           </div>
                         </TableCell>
-                        <TableCell style={{ color: "#B0A3CC" }}>
+                        <TableCell style={{ color: themeColors.textSecondary }}>
                           {song.artist}
                         </TableCell>
                         <TableCell>
                           <Badge
                             style={{
-                              backgroundColor: "#3E2A6633",
-                              color: "#B0A3CC",
+                              backgroundColor: `${themeColors.border}33`,
+                              color: themeColors.textSecondary,
                               border: "none",
                             }}
                           >
@@ -634,15 +601,15 @@ export function AdminPanel({
                             style={{
                               backgroundColor:
                                 song.status === "approved"
-                                  ? "#7B2CBF33"
+                                  ? `${themeColors.accentPrimary}33`
                                   : song.status === "pending"
-                                    ? "#9D4EDD33"
+                                    ? `${themeColors.accentHover}33`
                                     : "#d4183d33",
                               color:
                                 song.status === "approved"
-                                  ? "#9D4EDD"
+                                  ? themeColors.accentHover
                                   : song.status === "pending"
-                                    ? "#C77DFF"
+                                    ? themeColors.accentPrimary
                                     : "#d4183d",
                               border: "none",
                             }}
@@ -654,10 +621,10 @@ export function AdminPanel({
                                 : "Rechazada"}
                           </Badge>
                         </TableCell>
-                        <TableCell style={{ color: "#B0A3CC" }}>
+                        <TableCell style={{ color: themeColors.textSecondary }}>
                           {song.plays.toLocaleString()}
                         </TableCell>
-                        <TableCell style={{ color: "#B0A3CC" }}>
+                        <TableCell style={{ color: themeColors.textSecondary }}>
                           {song.uploadDate}
                         </TableCell>
                         <TableCell>
@@ -666,26 +633,22 @@ export function AdminPanel({
                               <>
                                 <Button
                                   size="sm"
-                                  onClick={() =>
-                                    handleApproveSong(song.id)
-                                  }
-                                  className="rounded-lg"
+                                  onClick={() => handleApproveSong(song.id)}
+                                  className="rounded-lg transition-all hover:scale-105 hover:bg-[${themeColors.accentHover}]"
                                   style={{
-                                    backgroundColor: "#7B2CBF",
-                                    color: "#E8E1FF",
+                                    backgroundColor: themeColors.accentPrimary,
+                                    color: themeColors.textPrimary,
                                   }}
                                 >
                                   <CheckCircle className="w-3 h-3" />
                                 </Button>
                                 <Button
                                   size="sm"
-                                  onClick={() =>
-                                    handleRejectSong(song.id)
-                                  }
-                                  className="rounded-lg"
+                                  onClick={() => handleRejectSong(song.id)}
+                                  className="rounded-lg transition-all hover:scale-105 hover:bg-red-600"
                                   style={{
                                     backgroundColor: "#d4183d",
-                                    color: "#E8E1FF",
+                                    color: themeColors.textPrimary,
                                   }}
                                 >
                                   <XCircle className="w-3 h-3" />
@@ -701,10 +664,10 @@ export function AdminPanel({
                                   id: song.id,
                                 })
                               }
-                              className="rounded-lg"
+                              className="rounded-lg transition-all hover:scale-105 hover:bg-[${themeColors.border}]"
                               style={{
-                                backgroundColor: "#3E2A66",
-                                color: "#E8E1FF",
+                                backgroundColor: themeColors.border,
+                                color: themeColors.textPrimary,
                               }}
                             >
                               <Trash2 className="w-3 h-3" />
@@ -723,152 +686,138 @@ export function AdminPanel({
           <TabsContent value="stats">
             <div className="grid md:grid-cols-2 gap-6">
               <div
-                className="rounded-xl p-6"
+                className="rounded-xl p-6 transition-all duration-300 hover:shadow-lg"
                 style={{
-                  backgroundColor: "#1A0F2E",
-                  border: "1px solid #3E2A66",
+                  backgroundColor: themeColors.bgSecondary,
+                  border: `1px solid ${themeColors.border}`,
                 }}
               >
                 <h3
                   className="mb-4"
-                  style={{ color: "#E8E1FF" }}
+                  style={{ color: themeColors.textPrimary }}
                 >
                   Actividad Reciente
                 </h3>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span style={{ color: "#B0A3CC" }}>
+                    <span style={{ color: themeColors.textSecondary }}>
                       Nuevos usuarios (hoy)
                     </span>
-                    <span style={{ color: "#E8E1FF" }}>
-                      +24
-                    </span>
+                    <span style={{ color: themeColors.textPrimary }}>+24</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span style={{ color: "#B0A3CC" }}>
+                    <span style={{ color: themeColors.textSecondary }}>
                       Canciones subidas (hoy)
                     </span>
-                    <span style={{ color: "#E8E1FF" }}>
-                      +18
-                    </span>
+                    <span style={{ color: themeColors.textPrimary }}>+18</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span style={{ color: "#B0A3CC" }}>
+                    <span style={{ color: themeColors.textSecondary }}>
                       Total reproducciones (hoy)
                     </span>
-                    <span style={{ color: "#E8E1FF" }}>
+                    <span style={{ color: themeColors.textPrimary }}>
                       12,847
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span style={{ color: "#B0A3CC" }}>
+                    <span style={{ color: themeColors.textSecondary }}>
                       Usuarios activos (ahora)
                     </span>
-                    <span style={{ color: "#E8E1FF" }}>
-                      342
-                    </span>
+                    <span style={{ color: themeColors.textPrimary }}>342</span>
                   </div>
                 </div>
               </div>
 
               <div
-                className="rounded-xl p-6"
+                className="rounded-xl p-6 transition-all duration-300 hover:shadow-lg"
                 style={{
-                  backgroundColor: "#1A0F2E",
-                  border: "1px solid #3E2A66",
+                  backgroundColor: themeColors.bgSecondary,
+                  border: `1px solid ${themeColors.border}`,
                 }}
               >
                 <h3
                   className="mb-4"
-                  style={{ color: "#E8E1FF" }}
+                  style={{ color: themeColors.textPrimary }}
                 >
                   Géneros Populares
                 </h3>
                 <div className="space-y-4">
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span style={{ color: "#B0A3CC" }}>
+                      <span style={{ color: themeColors.textSecondary }}>
                         Rock
                       </span>
-                      <span style={{ color: "#E8E1FF" }}>
-                        35%
-                      </span>
+                      <span style={{ color: themeColors.textPrimary }}>35%</span>
                     </div>
                     <div
                       className="w-full h-2 rounded-full"
-                      style={{ backgroundColor: "#3E2A66" }}
+                      style={{ backgroundColor: themeColors.border }}
                     >
                       <div
                         className="h-full rounded-full"
                         style={{
                           width: "35%",
-                          backgroundColor: "#7B2CBF",
+                          backgroundColor: themeColors.accentPrimary,
                         }}
                       ></div>
                     </div>
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span style={{ color: "#B0A3CC" }}>
+                      <span style={{ color: themeColors.textSecondary }}>
                         Electronic
                       </span>
-                      <span style={{ color: "#E8E1FF" }}>
-                        28%
-                      </span>
+                      <span style={{ color: themeColors.textPrimary }}>28%</span>
                     </div>
                     <div
                       className="w-full h-2 rounded-full"
-                      style={{ backgroundColor: "#3E2A66" }}
+                      style={{ backgroundColor: themeColors.border }}
                     >
                       <div
                         className="h-full rounded-full"
                         style={{
                           width: "28%",
-                          backgroundColor: "#9D4EDD",
+                          backgroundColor: themeColors.accentHover,
                         }}
                       ></div>
                     </div>
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span style={{ color: "#B0A3CC" }}>
+                      <span style={{ color: themeColors.textSecondary }}>
                         Hip-Hop
                       </span>
-                      <span style={{ color: "#E8E1FF" }}>
-                        22%
-                      </span>
+                      <span style={{ color: themeColors.textPrimary }}>22%</span>
                     </div>
                     <div
                       className="w-full h-2 rounded-full"
-                      style={{ backgroundColor: "#3E2A66" }}
+                      style={{ backgroundColor: themeColors.border }}
                     >
                       <div
                         className="h-full rounded-full"
                         style={{
                           width: "22%",
-                          backgroundColor: "#C77DFF",
+                          backgroundColor: themeColors.accentPrimary,
                         }}
                       ></div>
                     </div>
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span style={{ color: "#B0A3CC" }}>
+                      <span style={{ color: themeColors.textSecondary }}>
                         Alternative
                       </span>
-                      <span style={{ color: "#E8E1FF" }}>
-                        15%
-                      </span>
+                      <span style={{ color: themeColors.textPrimary }}>15%</span>
                     </div>
                     <div
                       className="w-full h-2 rounded-full"
-                      style={{ backgroundColor: "#3E2A66" }}
+                      style={{ backgroundColor: themeColors.border }}
                     >
                       <div
                         className="h-full rounded-full"
                         style={{
                           width: "15%",
-                          backgroundColor: "#E0AAFF",
+                          backgroundColor: themeColors.accentHover,
                         }}
                       ></div>
                     </div>
@@ -889,31 +838,28 @@ export function AdminPanel({
       >
         <AlertDialogContent
           style={{
-            backgroundColor: "#1A0F2E",
-            border: "1px solid #3E2A66",
+            backgroundColor: themeColors.bgSecondary,
+            border: `1px solid ${themeColors.border}`,
           }}
         >
           <AlertDialogHeader>
-            <AlertDialogTitle style={{ color: "#E8E1FF" }}>
+            <AlertDialogTitle style={{ color: themeColors.textPrimary }}>
               ¿Estás seguro?
             </AlertDialogTitle>
             <AlertDialogDescription
-              style={{ color: "#B0A3CC" }}
+              style={{ color: themeColors.textSecondary }}
             >
-              Esta acción no se puede deshacer. Esto eliminará
-              permanentemente{" "}
-              {deleteDialog.type === "user"
-                ? "el usuario"
-                : "la canción"}{" "}
-              de la plataforma.
+              Esta acción no se puede deshacer. Esto eliminará permanentemente{" "}
+              {deleteDialog.type === "user" ? "el usuario" : "la canción"} de la
+              plataforma.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel
-              className="rounded-lg"
+              className="rounded-lg transition-colors hover:bg-[${themeColors.border}]"
               style={{
-                backgroundColor: "#3E2A66",
-                color: "#E8E1FF",
+                backgroundColor: themeColors.border,
+                color: themeColors.textPrimary,
                 border: "none",
               }}
             >
@@ -921,22 +867,16 @@ export function AdminPanel({
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                if (
-                  deleteDialog.type === "user" &&
-                  deleteDialog.id
-                ) {
+                if (deleteDialog.type === "user" && deleteDialog.id) {
                   handleDeleteUser(deleteDialog.id);
-                } else if (
-                  deleteDialog.type === "song" &&
-                  deleteDialog.id
-                ) {
+                } else if (deleteDialog.type === "song" && deleteDialog.id) {
                   handleDeleteSong(deleteDialog.id);
                 }
               }}
-              className="rounded-lg"
+              className="rounded-lg transition-colors hover:bg-red-600"
               style={{
                 backgroundColor: "#d4183d",
-                color: "#E8E1FF",
+                color: themeColors.textPrimary,
               }}
             >
               Eliminar

@@ -185,7 +185,7 @@ export function ArtistDashboard({
               >
                 Panel de Artista
               </h2>
-              <p style={{ color: "#B0A3CC" }}>
+              <p style={{ color: themeColors.textSecondary }}>
                 Gestiona tu música y visualiza tus estadísticas
               </p>
             </div>
@@ -193,8 +193,8 @@ export function ArtistDashboard({
               onClick={onOpenUpload}
               className="rounded-xl w-full md:w-auto"
               style={{
-                backgroundColor: "#7B2CBF",
-                color: "#E8E1FF",
+                backgroundColor: themeColors.accentHover,
+                color: themeColors.textPrimary,
               }}
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -212,8 +212,8 @@ export function ArtistDashboard({
                 key={index}
                 className="rounded-xl p-4 transition-all duration-300 hover:scale-105"
                 style={{
-                  backgroundColor: "#1A0F2E",
-                  border: "1px solid #3E2A66",
+                  backgroundColor: themeColors.bgSecondary,
+                  border: `1px solid ${themeColors.border}`,
                 }}
               >
                 <div className="flex items-center justify-between mb-3">
@@ -223,8 +223,8 @@ export function ArtistDashboard({
                   />
                   <Badge
                     style={{
-                      backgroundColor: "#7B2CBF33",
-                      color: "#9D4EDD",
+                      backgroundColor: `${themeColors.accentPrimary}33`,
+                      color: themeColors.accentHover,
                       border: "none",
                       fontSize: "0.75rem",
                     }}
@@ -235,7 +235,7 @@ export function ArtistDashboard({
                 <div
                   className="mb-1"
                   style={{
-                    color: "#E8E1FF",
+                    color: themeColors.textPrimary,
                     fontSize: "1.5rem",
                   }}
                 >
@@ -243,7 +243,7 @@ export function ArtistDashboard({
                 </div>
                 <p
                   style={{
-                    color: "#B0A3CC",
+                    color: themeColors.textSecondary,
                     fontSize: "0.75rem",
                   }}
                 >
@@ -259,14 +259,14 @@ export function ArtistDashboard({
           <TabsList
             className="w-full md:w-auto rounded-xl mb-6"
             style={{
-              backgroundColor: "#1A0F2E",
-              border: "1px solid #3E2A66",
+              backgroundColor: themeColors.bgSecondary,
+              border: `1px solid ${themeColors.border}`,
             }}
           >
             <TabsTrigger
               value="songs"
               className="rounded-lg data-[state=active]:bg-[#7B2CBF] data-[state=active]:text-[#E8E1FF]"
-              style={{ color: "#B0A3CC" }}
+              style={{ color: themeColors.textPrimary }}
             >
               <Music2 className="w-4 h-4 mr-2" />
               Mis Canciones
@@ -274,7 +274,7 @@ export function ArtistDashboard({
             <TabsTrigger
               value="analytics"
               className="rounded-lg data-[state=active]:bg-[#7B2CBF] data-[state=active]:text-[#E8E1FF]"
-              style={{ color: "#B0A3CC" }}
+              style={{ color: themeColors.textPrimary }}
             >
               <BarChart3 className="w-4 h-4 mr-2" />
               Analíticas
@@ -286,14 +286,14 @@ export function ArtistDashboard({
             <div
               className="rounded-xl overflow-hidden"
               style={{
-                backgroundColor: "#1A0F2E",
-                border: "1px solid #3E2A66",
+                backgroundColor: themeColors.bgSecondary,
+                border: `1px solid ${themeColors.border}`,
               }}
             >
               <div className="p-6">
                 <h3
                   className="mb-6"
-                  style={{ color: "#E8E1FF" }}
+                  style={{ color: themeColors.textPrimary }}
                 >
                   Gestión de Canciones
                 </h3>
@@ -302,24 +302,24 @@ export function ArtistDashboard({
                   <Table>
                     <TableHeader>
                       <TableRow
-                        style={{ borderColor: "#3E2A66" }}
+                        style={{ borderColor: themeColors.border }}
                       >
-                        <TableHead style={{ color: "#B0A3CC" }}>
+                        <TableHead style={{ color: themeColors.textSecondary }}>
                           Canción
                         </TableHead>
-                        <TableHead style={{ color: "#B0A3CC" }}>
+                        <TableHead style={{ color: themeColors.textSecondary }}>
                           Estado
                         </TableHead>
-                        <TableHead style={{ color: "#B0A3CC" }}>
+                        <TableHead style={{ color: themeColors.textSecondary }}>
                           Reproducciones
                         </TableHead>
-                        <TableHead style={{ color: "#B0A3CC" }}>
+                        <TableHead style={{ color: themeColors.textSecondary }}>
                           Me Gusta
                         </TableHead>
-                        <TableHead style={{ color: "#B0A3CC" }}>
+                        <TableHead style={{ color: themeColors.textSecondary }}>
                           Fecha
                         </TableHead>
-                        <TableHead style={{ color: "#B0A3CC" }}>
+                        <TableHead style={{ color: themeColors.textSecondary }}>
                           Acciones
                         </TableHead>
                       </TableRow>
@@ -328,7 +328,7 @@ export function ArtistDashboard({
                       {songs.map((song) => (
                         <TableRow
                           key={song.id}
-                          style={{ borderColor: "#3E2A66" }}
+                          style={{ borderColor: themeColors.border }}
                         >
                           <TableCell>
                             <div className="flex items-center gap-3">
@@ -341,13 +341,13 @@ export function ArtistDashboard({
                               </div>
                               <div>
                                 <div
-                                  style={{ color: "#E8E1FF" }}
+                                  style={{ color: themeColors.textPrimary }}
                                 >
                                   {song.title}
                                 </div>
                                 <div
                                   style={{
-                                    color: "#B0A3CC",
+                                    color: themeColors.textSecondary,
                                     fontSize: "0.875rem",
                                   }}
                                 >
@@ -361,12 +361,12 @@ export function ArtistDashboard({
                               style={{
                                 backgroundColor:
                                   song.status === "published"
-                                    ? "#7B2CBF33"
-                                    : "#9D4EDD33",
+                                    ? `${themeColors.accentPrimary}33`
+                                    : `${themeColors.accentHover}33`,
                                 color:
                                   song.status === "published"
-                                    ? "#9D4EDD"
-                                    : "#C77DFF",
+                                    ? themeColors.accentHover
+                                    : themeColors.accentPrimary,
                                 border: "none",
                               }}
                             >
@@ -379,10 +379,10 @@ export function ArtistDashboard({
                             <div className="flex items-center gap-2">
                               <Play
                                 className="w-4 h-4"
-                                style={{ color: "#7B2CBF" }}
+                                style={{ color: themeColors.accentPrimary }}
                               />
                               <span
-                                style={{ color: "#E8E1FF" }}
+                                style={{ color: themeColors.textPrimary }}
                               >
                                 {song.plays.toLocaleString()}
                               </span>
@@ -392,17 +392,17 @@ export function ArtistDashboard({
                             <div className="flex items-center gap-2">
                               <Heart
                                 className="w-4 h-4"
-                                style={{ color: "#7B2CBF" }}
+                                style={{ color: themeColors.accentPrimary }}
                               />
                               <span
-                                style={{ color: "#E8E1FF" }}
+                                style={{ color: themeColors.textPrimary }}
                               >
                                 {song.likes.toLocaleString()}
                               </span>
                             </div>
                           </TableCell>
                           <TableCell
-                            style={{ color: "#B0A3CC" }}
+                            style={{ color: themeColors.textSecondary }}
                           >
                             {song.uploadDate}
                           </TableCell>
@@ -412,8 +412,8 @@ export function ArtistDashboard({
                                 size="sm"
                                 className="rounded-lg"
                                 style={{
-                                  backgroundColor: "#7B2CBF",
-                                  color: "#E8E1FF",
+                                  backgroundColor: themeColors.accentPrimary,
+                                  color: themeColors.textPrimary,
                                 }}
                               >
                                 <Eye className="w-3 h-3" />
@@ -422,8 +422,8 @@ export function ArtistDashboard({
                                 size="sm"
                                 className="rounded-lg"
                                 style={{
-                                  backgroundColor: "#3E2A66",
-                                  color: "#E8E1FF",
+                                  backgroundColor: themeColors.border,
+                                  color: themeColors.textPrimary,
                                 }}
                               >
                                 <Edit className="w-3 h-3" />
@@ -439,7 +439,7 @@ export function ArtistDashboard({
                                 className="rounded-lg"
                                 style={{
                                   backgroundColor: "#d4183d",
-                                  color: "#E8E1FF",
+                                  color: themeColors.textPrimary,
                                 }}
                               >
                                 <Trash2 className="w-3 h-3" />
@@ -462,15 +462,15 @@ export function ArtistDashboard({
               <Card
                 className="rounded-xl"
                 style={{
-                  backgroundColor: "#1A0F2E",
-                  border: "1px solid #3E2A66",
+                  backgroundColor: themeColors.bgSecondary,
+                  border: `1px solid ${themeColors.border}`,
                 }}
               >
                 <CardHeader>
-                  <CardTitle style={{ color: "#E8E1FF" }}>
+                  <CardTitle style={{ color: themeColors.textPrimary }}>
                     Crecimiento Mensual
                   </CardTitle>
-                  <CardDescription style={{ color: "#B0A3CC" }}>
+                  <CardDescription style={{ color: themeColors.textSecondary }}>
                     Reproducciones y seguidores por mes
                   </CardDescription>
                 </CardHeader>
@@ -479,18 +479,18 @@ export function ArtistDashboard({
                     {monthlyStats.map((stat, index) => (
                       <div key={index}>
                         <div className="flex items-center justify-between mb-2">
-                          <span style={{ color: "#B0A3CC" }}>
+                          <span style={{ color: themeColors.textSecondary }}>
                             {stat.month}
                           </span>
                           <div className="flex items-center gap-4">
                             <div className="flex items-center gap-1">
                               <Play
                                 className="w-3 h-3"
-                                style={{ color: "#7B2CBF" }}
+                                style={{ color: themeColors.accentPrimary }}
                               />
                               <span
                                 style={{
-                                  color: "#E8E1FF",
+                                  color: themeColors.textPrimary,
                                   fontSize: "0.875rem",
                                 }}
                               >
@@ -500,11 +500,11 @@ export function ArtistDashboard({
                             <div className="flex items-center gap-1">
                               <Users
                                 className="w-3 h-3"
-                                style={{ color: "#9D4EDD" }}
+                                style={{ color: themeColors.accentHover }}
                               />
                               <span
                                 style={{
-                                  color: "#E8E1FF",
+                                  color: themeColors.textPrimary,
                                   fontSize: "0.875rem",
                                 }}
                               >
@@ -517,7 +517,7 @@ export function ArtistDashboard({
                           value={(stat.plays / 31200) * 100}
                           className="h-2"
                           style={{
-                            backgroundColor: "#3E2A66",
+                            backgroundColor: themeColors.border,
                           }}
                         />
                       </div>
@@ -530,15 +530,15 @@ export function ArtistDashboard({
               <Card
                 className="rounded-xl"
                 style={{
-                  backgroundColor: "#1A0F2E",
-                  border: "1px solid #3E2A66",
+                  backgroundColor: themeColors.bgSecondary,
+                  border: `1px solid ${themeColors.border}`,
                 }}
               >
                 <CardHeader>
-                  <CardTitle style={{ color: "#E8E1FF" }}>
+                  <CardTitle style={{ color: themeColors.textPrimary }}>
                     Canciones Más Populares
                   </CardTitle>
-                  <CardDescription style={{ color: "#B0A3CC" }}>
+                  <CardDescription style={{ color: themeColors.textSecondary }}>
                     Tus canciones con más reproducciones
                   </CardDescription>
                 </CardHeader>
@@ -553,20 +553,20 @@ export function ArtistDashboard({
                               style={{
                                 backgroundColor:
                                   index === 0
-                                    ? "#7B2CBF"
-                                    : "#3E2A66",
-                                color: "#E8E1FF",
+                                    ? themeColors.accentPrimary
+                                    : themeColors.border,
+                                color: themeColors.textPrimary,
                               }}
                             >
                               {index + 1}
                             </div>
-                            <span style={{ color: "#E8E1FF" }}>
+                            <span style={{ color: themeColors.textPrimary }}>
                               {song.title}
                             </span>
                           </div>
                           <span
                             style={{
-                              color: "#B0A3CC",
+                              color: themeColors.textSecondary,
                               fontSize: "0.875rem",
                             }}
                           >
@@ -577,7 +577,7 @@ export function ArtistDashboard({
                           value={song.percentage}
                           className="h-2"
                           style={{
-                            backgroundColor: "#3E2A66",
+                            backgroundColor: themeColors.border,
                           }}
                         />
                       </div>
@@ -590,15 +590,15 @@ export function ArtistDashboard({
               <Card
                 className="rounded-xl md:col-span-2"
                 style={{
-                  backgroundColor: "#1A0F2E",
-                  border: "1px solid #3E2A66",
+                  backgroundColor: themeColors.bgSecondary,
+                  border: `1px solid ${themeColors.border}`,
                 }}
               >
                 <CardHeader>
-                  <CardTitle style={{ color: "#E8E1FF" }}>
+                  <CardTitle style={{ color: themeColors.textPrimary }}>
                     Estadísticas de Engagement
                   </CardTitle>
-                  <CardDescription style={{ color: "#B0A3CC" }}>
+                  <CardDescription style={{ color: themeColors.textSecondary }}>
                     Interacción de los oyentes con tu música
                   </CardDescription>
                 </CardHeader>
@@ -608,19 +608,19 @@ export function ArtistDashboard({
                       <div
                         className="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center"
                         style={{
-                          backgroundColor: "#7B2CBF33",
-                          border: "2px solid #7B2CBF",
+                          backgroundColor: `${themeColors.accentPrimary}33`,
+                          border: `2px solid ${themeColors.accentPrimary}`,
                         }}
                       >
                         <TrendingUp
                           className="w-8 h-8"
-                          style={{ color: "#7B2CBF" }}
+                          style={{ color: themeColors.accentPrimary }}
                         />
                       </div>
                       <div
                         className="mb-1"
                         style={{
-                          color: "#E8E1FF",
+                          color: themeColors.textPrimary,
                           fontSize: "1.5rem",
                         }}
                       >
@@ -628,7 +628,7 @@ export function ArtistDashboard({
                       </div>
                       <p
                         style={{
-                          color: "#B0A3CC",
+                          color: themeColors.textSecondary,
                           fontSize: "0.875rem",
                         }}
                       >
@@ -639,19 +639,19 @@ export function ArtistDashboard({
                       <div
                         className="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center"
                         style={{
-                          backgroundColor: "#9D4EDD33",
-                          border: "2px solid #9D4EDD",
+                          backgroundColor: `${themeColors.accentHover}33`,
+                          border: `2px solid ${themeColors.accentHover}`,
                         }}
                       >
                         <Heart
                           className="w-8 h-8"
-                          style={{ color: "#9D4EDD" }}
+                          style={{ color: themeColors.accentHover }}
                         />
                       </div>
                       <div
                         className="mb-1"
                         style={{
-                          color: "#E8E1FF",
+                          color: themeColors.textPrimary,
                           fontSize: "1.5rem",
                         }}
                       >
@@ -659,7 +659,7 @@ export function ArtistDashboard({
                       </div>
                       <p
                         style={{
-                          color: "#B0A3CC",
+                          color: themeColors.textSecondary,
                           fontSize: "0.875rem",
                         }}
                       >
@@ -670,19 +670,19 @@ export function ArtistDashboard({
                       <div
                         className="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center"
                         style={{
-                          backgroundColor: "#C77DFF33",
-                          border: "2px solid #C77DFF",
+                          backgroundColor: `${themeColors.accentHover}33`,
+                          border: `2px solid ${themeColors.accentHover}`,
                         }}
                       >
                         <Users
                           className="w-8 h-8"
-                          style={{ color: "#C77DFF" }}
+                          style={{ color: themeColors.accentHover }}
                         />
                       </div>
                       <div
                         className="mb-1"
                         style={{
-                          color: "#E8E1FF",
+                          color: themeColors.textPrimary,
                           fontSize: "1.5rem",
                         }}
                       >
@@ -690,7 +690,7 @@ export function ArtistDashboard({
                       </div>
                       <p
                         style={{
-                          color: "#B0A3CC",
+                          color: themeColors.textSecondary,
                           fontSize: "0.875rem",
                         }}
                       >
@@ -714,16 +714,16 @@ export function ArtistDashboard({
       >
         <AlertDialogContent
           style={{
-            backgroundColor: "#1A0F2E",
-            border: "1px solid #3E2A66",
+            backgroundColor: themeColors.bgSecondary,
+            border: `1px solid ${themeColors.border}`,
           }}
         >
           <AlertDialogHeader>
-            <AlertDialogTitle style={{ color: "#E8E1FF" }}>
+            <AlertDialogTitle style={{ color: themeColors.textPrimary }}>
               ¿Eliminar canción?
             </AlertDialogTitle>
             <AlertDialogDescription
-              style={{ color: "#B0A3CC" }}
+              style={{ color: themeColors.textSecondary }}
             >
               Esta acción no se puede deshacer. La canción será
               eliminada permanentemente de la plataforma.
@@ -733,8 +733,8 @@ export function ArtistDashboard({
             <AlertDialogCancel
               className="rounded-lg"
               style={{
-                backgroundColor: "#3E2A66",
-                color: "#E8E1FF",
+                backgroundColor: themeColors.border,
+                color: themeColors.textPrimary,
                 border: "none",
               }}
             >
@@ -749,7 +749,7 @@ export function ArtistDashboard({
               className="rounded-lg"
               style={{
                 backgroundColor: "#d4183d",
-                color: "#E8E1FF",
+                color: themeColors.textPrimary,
               }}
             >
               Eliminar

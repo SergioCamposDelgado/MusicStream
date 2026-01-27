@@ -11,12 +11,7 @@ interface LibraryProps {
 
 const playlists = [
   { id: 1, title: "Mis Favoritas", tracks: 24, cover: null },
-  {
-    id: 2,
-    title: "Descubrimientos 2024",
-    tracks: 18,
-    cover: null,
-  },
+  { id: 2, title: "Descubrimientos 2024", tracks: 18, cover: null },
   { id: 3, title: "Noche de Estudio", tracks: 32, cover: null },
   { id: 4, title: "Underground Gems", tracks: 45, cover: null },
   { id: 5, title: "Chill Vibes", tracks: 28, cover: null },
@@ -43,12 +38,12 @@ export function Library({
             className="flex items-center gap-2 transition-colors"
             style={{ color: themeColors.textSecondary }}
             onMouseEnter={(e) =>
-              (e.currentTarget.style.color =
-                themeColors.textPrimary)
+            (e.currentTarget.style.color =
+              themeColors.textPrimary)
             }
             onMouseLeave={(e) =>
-              (e.currentTarget.style.color =
-                themeColors.textSecondary)
+            (e.currentTarget.style.color =
+              themeColors.textSecondary)
             }
           >
             <ArrowLeft className="w-5 h-5" />
@@ -63,12 +58,12 @@ export function Library({
               color: themeColors.textPrimary,
             }}
             onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) =>
-              (e.currentTarget.style.backgroundColor =
-                themeColors.accentHover)
+            (e.currentTarget.style.backgroundColor =
+              themeColors.accentHover)
             }
             onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) =>
-              (e.currentTarget.style.backgroundColor =
-                themeColors.accentPrimary)
+            (e.currentTarget.style.backgroundColor =
+              themeColors.accentPrimary)
             }
           >
             <Plus className="w-5 h-5 mr-2" />
@@ -192,12 +187,12 @@ export function Library({
                     className="ml-2 transition-all duration-200 hover:scale-110"
                     style={{ color: themeColors.textSecondary }}
                     onMouseEnter={(e) =>
-                      (e.currentTarget.style.color =
-                        themeColors.accentPrimary)
+                    (e.currentTarget.style.color =
+                      themeColors.accentPrimary)
                     }
                     onMouseLeave={(e) =>
-                      (e.currentTarget.style.color =
-                        themeColors.textSecondary)
+                    (e.currentTarget.style.color =
+                      themeColors.textSecondary)
                     }
                     onClick={(e) => {
                       e.stopPropagation();

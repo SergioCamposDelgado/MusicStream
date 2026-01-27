@@ -23,6 +23,16 @@ import {
 } from "./ui/avatar";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "./ui/alert-dialog";
 import { ThemeColors } from "../App";
 import { defaultColors } from "../utils/theme";
 
@@ -93,6 +103,9 @@ export function Account({
   const [userEmail, setUserEmail] = useState(
     "usuario@musicstream.com",
   );
+
+  // Estado para controlar el diálogo de cierre de sesión
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
   const handleAvatarChange = () => {
     // Simulamos la selección de una imagen
@@ -483,7 +496,7 @@ export function Account({
             </div>
 
             <Button
-              className="w-full justify-start rounded-lg"
+              className="w-full justify-start rounded-lg transition-colors hover:bg-[${themeColors.bgTertiary}]"
               style={{
                 backgroundColor: themeColors.bgPrimary,
                 color: themeColors.textPrimary,
@@ -494,7 +507,7 @@ export function Account({
               Preferencias de Privacidad
             </Button>
             <Button
-              className="w-full justify-start rounded-lg"
+              className="w-full justify-start rounded-lg transition-colors hover:bg-[${themeColors.bgTertiary}]"
               style={{
                 backgroundColor: themeColors.bgPrimary,
                 color: themeColors.textPrimary,
@@ -513,8 +526,9 @@ export function Account({
               }}
             />
 
+            {/* Botón Cerrar Sesión */}
             <Button
-              onClick={onLogout}
+              onClick={() => setLogoutDialogOpen(true)}
               className="w-full justify-start rounded-lg hover:scale-105 transition-all duration-300"
               style={{
                 backgroundColor: "#d4183d",
@@ -527,6 +541,54 @@ export function Account({
           </div>
         </div>
       </div>
+
+      {/* Diálogo de confirmación de cierre de sesión */}
+      <AlertDialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
+        <AlertDialogContent
+          style={{
+            backgroundColor: themeColors.bgSecondary,
+            border: `1px solid ${themeColors.border}`,
+          }}
+        >
+          <AlertDialogHeader>
+            <AlertDialogTitle style={{ color: themeColors.textPrimary }}>
+              ¿Cerrar sesión?
+            </AlertDialogTitle>
+            <AlertDialogDescription
+              style={{ color: themeColors.textSecondary }}
+            >
+              Se cerrará tu sesión actual. Tendrás que iniciar sesión de nuevo para volver a acceder a tu cuenta.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              className="rounded-lg transition-colors hover:bg-[${themeColors.border}]"
+              style={{
+                backgroundColor: themeColors.border,
+                color: themeColors.textPrimary,
+                border: "none",
+              }}
+            >
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (onLogout) {
+                  onLogout();
+                }
+                setLogoutDialogOpen(false);
+              }}
+              className="rounded-lg transition-colors hover:bg-red-600"
+              style={{
+                backgroundColor: "#d4183d",
+                color: themeColors.textPrimary,
+              }}
+            >
+              Cerrar Sesión
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
