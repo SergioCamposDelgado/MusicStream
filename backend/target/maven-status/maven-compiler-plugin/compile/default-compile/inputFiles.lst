@@ -1,0 +1,16 @@
+/home/grecoxyt/Documentos/GitHub/MusicStream/backend/src/main/java/com/musicstream/MusicStreamApplication.java
+/home/grecoxyt/Documentos/GitHub/MusicStream/backend/src/main/java/com/musicstream/config/DataInitializer.java
+/home/grecoxyt/Documentos/GitHub/MusicStream/backend/src/main/java/com/musicstream/config/SecurityConfig.java
+/home/grecoxyt/Documentos/GitHub/MusicStream/backend/src/main/java/com/musicstream/config/WebConfig.java
+/home/grecoxyt/Documentos/GitHub/MusicStream/backend/src/main/java/com/musicstream/controller/AuthController.java
+/home/grecoxyt/Documentos/GitHub/MusicStream/backend/src/main/java/com/musicstream/controller/UserController.java
+/home/grecoxyt/Documentos/GitHub/MusicStream/backend/src/main/java/com/musicstream/dto/AuthResponseDTO.java
+/home/grecoxyt/Documentos/GitHub/MusicStream/backend/src/main/java/com/musicstream/dto/LoginRequestDTO.java
+/home/grecoxyt/Documentos/GitHub/MusicStream/backend/src/main/java/com/musicstream/dto/RegisterRequestDTO.java
+/home/grecoxyt/Documentos/GitHub/MusicStream/backend/src/main/java/com/musicstream/dto/UserProfileDTO.java
+/home/grecoxyt/Documentos/GitHub/MusicStream/backend/src/main/java/com/musicstream/dto/UserUpdateDTO.java
+/home/grecoxyt/Documentos/GitHub/MusicStream/backend/src/main/java/com/musicstream/entity/User.java
+/home/grecoxyt/Documentos/GitHub/MusicStream/backend/src/main/java/com/musicstream/repository/UserRepository.java
+/home/grecoxyt/Documentos/GitHub/MusicStream/backend/src/main/java/com/musicstream/service/AuthService.java
+/home/grecoxyt/Documentos/GitHub/MusicStream/backend/src/main/java/com/musicstream/service/CustomUserDetailsService.java
+/home/grecoxyt/Documentos/GitHub/MusicStream/backend/src/main/java/com/musicstream/service/UserService.java

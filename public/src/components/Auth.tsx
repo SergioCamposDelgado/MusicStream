@@ -5,6 +5,7 @@ import { Checkbox } from "./ui/checkbox";
 import { Logo } from "./Logo";
 import { useState } from "react";
 import { ThemeColors } from "../App";
+import { useAuth } from '../context/AuthContext'; // ajusta la ruta según tu estructura
 
 interface AuthProps {
   onNavigate: (page: string) => void;
@@ -17,8 +18,19 @@ export function Auth({
   onLogin,
   colors,
 }: AuthProps) {
+  const { login, register } = useAuth();
+
   const [isLogin, setIsLogin] = useState(true);
   const [isArtist, setIsArtist] = useState(false);
+
+  // Estados del formulario
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  // Estado para mensajes de feedback
+  const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
   const defaultColors: ThemeColors = {
     bgPrimary: "#0F0A1A",
@@ -34,12 +46,51 @@ export function Auth({
 
   const themeColors = colors || defaultColors;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (onLogin) {
-      onLogin(isArtist);
-    }
-    onNavigate("home");
+    setMessage(null); // Limpia mensaje anterior
+
+    try {
+      if (isLogin) {
+        // Login
+        await login(email, password);
+        setMessage({ text: "¡Bienvenido! Sesión iniciada.", type: 'success' });
+      } else {
+        // Registro
+        if (password !== confirmPassword) {
+          setMessage({ text: "Las contraseñas no coinciden", type: 'error' });
+          return;
+        }
+
+        await register({
+          name: name.trim() || email.split("@")[0],
+          email,
+          password,
+          confirmPassword,
+          isArtist,
+          avatarUrl: undefined,
+        });
+
+        setMessage({ text: "¡Cuenta creada! Sesión iniciada automáticamente.", type: 'success' });
+      }
+
+      // Navegación
+      onNavigate("home");
+      if (onLogin) onLogin(isArtist);
+    } catch (err: any) {
+const errorResponse = err.response?.data;
+  let errorText = "Error desconocido";
+
+  if (errorResponse?.message) {
+    errorText = errorResponse.message;
+  } else if (errorResponse?.errors?.length > 0) {
+    // Extrae el primer error de validación
+    const firstError = errorResponse.errors[0];
+    errorText = `${firstError.field}: ${firstError.defaultMessage}`;
+  }
+
+  setMessage({ text: errorText, type: 'error' });
+}
   };
 
   return (
@@ -63,11 +114,22 @@ export function Auth({
             MusicStream
           </h1>
           <p style={{ color: themeColors.textSecondary }}>
-            {isLogin
-              ? "Bienvenido de vuelta"
-              : "Únete a la comunidad"}
+            {isLogin ? "Bienvenido de vuelta" : "Únete a la comunidad"}
           </p>
         </div>
+
+        {/* Mensaje de feedback */}
+        {message && (
+          <div
+            className={`p-3 mb-6 rounded-lg text-center ${
+              message.type === 'success'
+                ? 'bg-green-800/30 text-green-200 border border-green-600'
+                : 'bg-red-800/30 text-red-200 border border-red-600'
+            }`}
+          >
+            {message.text}
+          </div>
+        )}
 
         {/* Form Card */}
         <div
@@ -80,16 +142,15 @@ export function Auth({
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email */}
             <div className="space-y-2">
-              <Label
-                htmlFor="email"
-                style={{ color: themeColors.textPrimary }}
-              >
+              <Label htmlFor="email" style={{ color: themeColors.textPrimary }}>
                 Email
               </Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="tu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 className="rounded-lg"
                 style={{
@@ -100,41 +161,17 @@ export function Auth({
               />
             </div>
 
-            {/* Password */}
-            <div className="space-y-2">
-              <Label
-                htmlFor="password"
-                style={{ color: themeColors.textPrimary }}
-              >
-                Contraseña
-              </Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                required
-                className="rounded-lg"
-                style={{
-                  backgroundColor: themeColors.bgPrimary,
-                  borderColor: themeColors.border,
-                  color: themeColors.textPrimary,
-                }}
-              />
-            </div>
-
-            {/* Confirm Password (Register only) */}
+            {/* Nombre - solo registro */}
             {!isLogin && (
               <div className="space-y-2">
-                <Label
-                  htmlFor="confirm-password"
-                  style={{ color: themeColors.textPrimary }}
-                >
-                  Confirmar contraseña
+                <Label htmlFor="name" style={{ color: themeColors.textPrimary }}>
+                  Nombre
                 </Label>
                 <Input
-                  id="confirm-password"
-                  type="password"
-                  placeholder="••••••••"
+                  id="name"
+                  placeholder="Tu nombre"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   required
                   className="rounded-lg"
                   style={{
@@ -146,18 +183,58 @@ export function Auth({
               </div>
             )}
 
-            {/* Artist Checkbox (Register only) */}
+            {/* Password */}
+            <div className="space-y-2">
+              <Label htmlFor="password" style={{ color: themeColors.textPrimary }}>
+                Contraseña
+              </Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="rounded-lg"
+                style={{
+                  backgroundColor: themeColors.bgPrimary,
+                  borderColor: themeColors.border,
+                  color: themeColors.textPrimary,
+                }}
+              />
+            </div>
+
+            {/* Confirmar contraseña - solo registro */}
+            {!isLogin && (
+              <div className="space-y-2">
+                <Label htmlFor="confirm-password" style={{ color: themeColors.textPrimary }}>
+                  Confirmar contraseña
+                </Label>
+                <Input
+                  id="confirm-password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  className="rounded-lg"
+                  style={{
+                    backgroundColor: themeColors.bgPrimary,
+                    borderColor: themeColors.border,
+                    color: themeColors.textPrimary,
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Checkbox artista */}
             {!isLogin && (
               <div className="flex items-center gap-3">
                 <Checkbox
                   id="artist"
                   checked={isArtist}
-                  onCheckedChange={(checked: boolean) =>
-                    setIsArtist(checked as boolean)
-                  }
-                  style={{
-                    borderColor: themeColors.border,
-                  }}
+                  onCheckedChange={(checked : boolean) => setIsArtist(!!checked)}
+                  style={{ borderColor: themeColors.border }}
                   className="data-[state=checked]:bg-[#7B2CBF]"
                 />
                 <Label
@@ -180,35 +257,25 @@ export function Auth({
                 boxShadow: "0 0 20px rgba(123, 44, 191, 0.3)",
               }}
               onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
-                e.currentTarget.style.backgroundColor =
-                  themeColors.accentHover;
-                e.currentTarget.style.boxShadow =
-                  "0 0 30px rgba(157, 78, 221, 0.5)";
+                e.currentTarget.style.backgroundColor = themeColors.accentHover;
+                e.currentTarget.style.boxShadow = "0 0 30px rgba(157, 78, 221, 0.5)";
               }}
               onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
-                e.currentTarget.style.backgroundColor =
-                  themeColors.accentPrimary;
-                e.currentTarget.style.boxShadow =
-                  "0 0 20px rgba(123, 44, 191, 0.3)";
+                e.currentTarget.style.backgroundColor = themeColors.accentPrimary;
+                e.currentTarget.style.boxShadow = "0 0 20px rgba(123, 44, 191, 0.3)";
               }}
             >
               {isLogin ? "Iniciar sesión" : "Crear cuenta"}
             </Button>
 
-            {/* Forgot Password (Login only) */}
+            {/* Forgot Password (solo login) */}
             {isLogin && (
               <button
                 type="button"
                 className="w-full text-center transition-colors"
                 style={{ color: themeColors.textSecondary }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.color =
-                    themeColors.accentHover)
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.color =
-                    themeColors.textSecondary)
-                }
+                onMouseEnter={(e) => (e.currentTarget.style.color = themeColors.accentHover)}
+                onMouseLeave={(e) => (e.currentTarget.style.color = themeColors.textSecondary)}
               >
                 ¿Olvidaste tu contraseña?
               </button>
@@ -218,21 +285,13 @@ export function Auth({
           {/* Toggle Login/Register */}
           <div className="mt-6 text-center">
             <p style={{ color: themeColors.textSecondary }}>
-              {isLogin
-                ? "¿No tienes cuenta? "
-                : "¿Ya tienes cuenta? "}
+              {isLogin ? "¿No tienes cuenta? " : "¿Ya tienes cuenta? "}
               <button
                 onClick={() => setIsLogin(!isLogin)}
                 className="transition-colors"
                 style={{ color: themeColors.accentHover }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.color =
-                    themeColors.accentPrimary)
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.color =
-                    themeColors.accentHover)
-                }
+                onMouseEnter={(e) => (e.currentTarget.style.color = themeColors.accentPrimary)}
+                onMouseLeave={(e) => (e.currentTarget.style.color = themeColors.accentHover)}
               >
                 {isLogin ? "Regístrate" : "Inicia sesión"}
               </button>
@@ -246,14 +305,8 @@ export function Auth({
             onClick={() => onNavigate("home")}
             className="transition-colors"
             style={{ color: themeColors.textSecondary }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.color =
-                themeColors.textPrimary)
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.color =
-                themeColors.textSecondary)
-            }
+            onMouseEnter={(e) => (e.currentTarget.style.color = themeColors.textPrimary)}
+            onMouseLeave={(e) => (e.currentTarget.style.color = themeColors.textSecondary)}
           >
             ← Volver al inicio
           </button>
