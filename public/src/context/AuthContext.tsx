@@ -2,11 +2,20 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import axios from 'axios';
 
 interface User {
+  id?: number;
   email: string;
   name: string;
   avatarUrl?: string;
   isArtist: boolean;
   isAdmin: boolean;
+}
+
+interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  isArtist: boolean;
 }
 
 interface AuthContextType {
@@ -18,14 +27,21 @@ interface AuthContextType {
   checkAuth: () => Promise<void>;
 }
 
-interface RegisterData {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  isArtist: boolean;
-  avatarUrl?: string;
-}
+// ==================== CONFIGURACIÓN DEL BACKEND ====================
+
+const BACKEND_URL = 'http://localhost:9000';   // ← Puerto que estás usando en Spring Boot
+const API_BASE = `${BACKEND_URL}/api`;
+
+const api = axios.create({
+  baseURL: API_BASE,
+  withCredentials: true,           // Necesario para sesiones con cookies
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  timeout: 10000,
+});
+
+// ================================================================
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -33,31 +49,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // ¡Puerto 9000 como dijiste!
-  const API_URL = 'http://localhost:9000/api/auth';
-
-  // Configuración global para que SIEMPRE envíe cookies
-  axios.defaults.withCredentials = true;
-
-  // Opcional: baseURL global para no repetir
-  axios.defaults.baseURL = API_URL;
-
+  // Verificar si el usuario ya está logueado al cargar la app
   useEffect(() => {
     checkAuth();
   }, []);
 
   const checkAuth = async () => {
     try {
-      console.log('Intentando checkAuth en:', `${API_URL}/me`);
-      const res = await axios.get('/me');
-      console.log('checkAuth OK → usuario:', res.data);
+      const res = await api.get('/auth/me');
       setUser(res.data);
-    } catch (err: any) {
-      console.log('checkAuth falló:', {
-        status: err.response?.status,
-        message: err.message,
-        data: err.response?.data,
-      });
+    } catch (err) {
       setUser(null);
     } finally {
       setIsLoading(false);
@@ -66,51 +67,65 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string) => {
     try {
-      console.log('Intentando login con:', { email });
-      const res = await axios.post('/login', { email, password });
-      console.log('Login OK → respuesta:', res.data);
+      const res = await api.post('/auth/login', { email, password });
       setUser(res.data);
     } catch (err: any) {
-      console.error('Error en login:', {
-        status: err.response?.status,
-        data: err.response?.data,
-        message: err.message,
-      });
-      throw new Error(err.response?.data?.message || 'Credenciales inválidas o error de conexión');
+      let errorMessage = 'Error al iniciar sesión';
+
+      if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.response?.status === 401) {
+        errorMessage = 'Email o contraseña incorrectos';
+      } else if (err.response?.status === 400) {
+        errorMessage = err.response.data?.message || 'Datos inválidos';
+      } else if (!err.response) {
+        errorMessage = 'No se pudo conectar con el servidor. Verifica que Spring Boot esté corriendo.';
+      }
+
+      throw new Error(errorMessage);
     }
   };
 
   const register = async (data: RegisterData) => {
     try {
-      console.log('Intentando registro con:', data.email);
-      const res = await axios.post('/register', data);
-      console.log('Registro OK → respuesta:', res.data);
-      setUser(res.data);
+      const res = await api.post('/auth/register', data);
+      setUser(res.data);        // Opcional: auto-login después del registro
     } catch (err: any) {
-      console.error('Error en registro:', {
-        status: err.response?.status,
-        data: err.response?.data,
-        message: err.message,
-      });
-      if (err.response?.status === 400) {
-        throw new Error(err.response.data?.message || 'Datos inválidos (¿email ya existe?)');
+      let errorMessage = 'Error al crear la cuenta';
+
+      if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.response?.status === 400) {
+        errorMessage = err.response.data?.message || 'Datos inválidos (¿email ya existe?)';
+      } else if (!err.response) {
+        errorMessage = 'No se pudo conectar con el servidor';
       }
-      throw new Error('Error al crear la cuenta');
+
+      throw new Error(errorMessage);
     }
   };
 
   const logout = async () => {
     try {
-      await axios.post('/logout');
-      setUser(null);
-      console.log('Logout exitoso');
+      await api.post('/auth/logout');
     } catch (err) {
-      console.error('Error en logout:', err);
+      console.error("Error al cerrar sesión:", err);
+    } finally {
+      setUser(null);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout, checkAuth }}>
+    <AuthContext.Provider 
+      value={{ 
+        user, 
+        isLoading, 
+        login, 
+        register, 
+        logout, 
+        checkAuth 
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -1,11 +1,12 @@
 package com.musicstream.controller;
 
 import com.musicstream.dto.AuthResponseDTO;
+import com.musicstream.dto.ErrorResponseDTO;
 import com.musicstream.dto.LoginRequestDTO;
 import com.musicstream.dto.RegisterRequestDTO;
 import com.musicstream.entity.User;
+import com.musicstream.exception.EmailAlreadyExistsException;
 import com.musicstream.service.AuthService;
-import com.musicstream.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -17,6 +18,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,48 +28,80 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
-    private final UserService userService;
     private final AuthenticationManager authenticationManager;
 
     /**
      * Registro de nuevo usuario
-     * - Crea el usuario
-     * - NO autentica automáticamente (común en muchas apps: obliga a hacer login después)
      */
     @PostMapping("/register")
-    public ResponseEntity<AuthResponseDTO> register(
-            @Valid @RequestBody RegisterRequestDTO request,
-            HttpSession session) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO request) {
 
-        if (request.getConfirmPassword() != null && !request.getPassword().equals(request.getConfirmPassword())) {
-            throw new IllegalArgumentException("Las contraseñas no coinciden");
+        try {
+            if (request.getConfirmPassword() != null && 
+                !request.getPassword().equals(request.getConfirmPassword())) {
+
+                return ResponseEntity.badRequest().body(
+                    ErrorResponseDTO.builder()
+                        .message("Las contraseñas no coinciden")
+                        .errorCode("PASSWORD_MISMATCH")
+                        .status(400)
+                        .build()
+                );
+            }
+
+            User newUser = authService.register(request);
+
+            AuthResponseDTO response = AuthResponseDTO.builder()
+                    .email(newUser.getEmail())
+                    .name(newUser.getName())
+                    .avatarUrl(newUser.getAvatarUrl())
+                    .isArtist(newUser.isArtist())
+                    .isAdmin(newUser.isAdmin())
+                    .build();
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+        } 
+        catch (EmailAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ErrorResponseDTO.builder()
+                    .message(e.getMessage())
+                    .errorCode("EMAIL_ALREADY_EXISTS")
+                    .status(409)
+                    .build()
+            );
+        } 
+        
+        catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(
+                ErrorResponseDTO.builder()
+                    .message(e.getMessage())
+                    .errorCode("BAD_REQUEST")
+                    .status(400)
+                    .build()
+            );
         }
 
-        User newUser = authService.register(request);
-
-        AuthResponseDTO response = AuthResponseDTO.builder()
-                .email(newUser.getEmail())
-                .name(newUser.getName())
-                .avatarUrl(newUser.getAvatarUrl())
-                .isArtist(newUser.isArtist())
-                .isAdmin(newUser.isAdmin())
-                .build();
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                ErrorResponseDTO.builder()
+                    .message("Error al registrar el usuario")
+                    .errorCode("REGISTRATION_ERROR")
+                    .status(500)
+                    .build()
+            );
+        }
     }
 
     /**
      * Login con credenciales
-     * - Autentica al usuario y crea la sesión
-     * - Devuelve datos básicos del usuario autenticado
      */
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> login(
+    public ResponseEntity<?> login(
             @Valid @RequestBody LoginRequestDTO request,
             HttpServletRequest httpRequest) {
 
         try {
-            // Autenticación manual
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getEmail(),
@@ -74,14 +109,12 @@ public class AuthController {
                     )
             );
 
-            // Establece la autenticación en el contexto de seguridad
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            // Opcional: fuerza la creación/actualización de la sesión
+            // Crear/actualizar sesión
             HttpSession session = httpRequest.getSession(true);
             session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
-            // Obtenemos el usuario autenticado
             User user = (User) authentication.getPrincipal();
 
             AuthResponseDTO response = AuthResponseDTO.builder()
@@ -94,20 +127,37 @@ public class AuthController {
 
             return ResponseEntity.ok(response);
 
-        } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Email o contraseña incorrectos");
+        } 
+        // Credenciales incorrectas
+        catch (BadCredentialsException e) {
+            ErrorResponseDTO error = ErrorResponseDTO.builder()
+                    .message("Email o contraseña incorrectos")
+                    .errorCode("INVALID_CREDENTIALS")
+                    .status(401)
+                    .build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        } 
+        // Errores de validación (@Valid)
+
+        // Otros errores
+        catch (Exception e) {
+            ErrorResponseDTO error = ErrorResponseDTO.builder()
+                    .message("Error interno del servidor")
+                    .errorCode("INTERNAL_ERROR")
+                    .status(500)
+                    .build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 
     /**
-     * Obtiene la información del usuario actualmente autenticado
-     * (útil para que el frontend verifique si hay sesión activa al cargar)
+     * Obtiene el usuario actualmente autenticado
      */
     @GetMapping("/me")
     public ResponseEntity<AuthResponseDTO> getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth == null || !auth.isAuthenticated() || auth.getPrincipal().equals("anonymousUser")) {
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -125,7 +175,7 @@ public class AuthController {
     }
 
     /**
-     * Cierre de sesión explícito
+     * Cierre de sesión
      */
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request) {

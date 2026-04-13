@@ -5,11 +5,11 @@ import { Checkbox } from "./ui/checkbox";
 import { Logo } from "./Logo";
 import { useState } from "react";
 import { ThemeColors } from "../App";
-import { useAuth } from '../context/AuthContext'; // ajusta la ruta según tu estructura
+import { useAuth } from '../context/AuthContext';
 
 interface AuthProps {
   onNavigate: (page: string) => void;
-  onLogin?: (isArtist: boolean) => void;
+  onLogin?: (isArtist: boolean) => void;   // Mantenemos para que funcione la sesión
   colors?: ThemeColors;
 }
 
@@ -29,8 +29,9 @@ export function Auth({
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // Estado para mensajes de feedback
+  // Estados de UI
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const defaultColors: ThemeColors = {
     bgPrimary: "#0F0A1A",
@@ -48,49 +49,60 @@ export function Auth({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setMessage(null); // Limpia mensaje anterior
+    setMessage(null);
+    setIsSubmitting(true);
 
     try {
       if (isLogin) {
         // Login
-        await login(email, password);
-        setMessage({ text: "¡Bienvenido! Sesión iniciada.", type: 'success' });
+        await login(email.trim(), password);
+        setMessage({ text: "¡Bienvenido! Sesión iniciada correctamente.", type: 'success' });
       } else {
         // Registro
         if (password !== confirmPassword) {
           setMessage({ text: "Las contraseñas no coinciden", type: 'error' });
+          setIsSubmitting(false);
           return;
         }
 
         await register({
           name: name.trim() || email.split("@")[0],
-          email,
+          email: email.trim(),
           password,
           confirmPassword,
           isArtist,
-          avatarUrl: undefined,
         });
 
-        setMessage({ text: "¡Cuenta creada! Sesión iniciada automáticamente.", type: 'success' });
+        setMessage({ text: "¡Cuenta creada exitosamente!", type: 'success' });
       }
 
-      // Navegación
-      onNavigate("home");
-      if (onLogin) onLogin(isArtist);
+      // ←←← ESTO ES LO QUE HACE QUE SE GUARDE LA SESIÓN (igual que tu versión original)
+      if (onLogin) {
+        onLogin(isArtist);
+      }
+
+      // Pequeño delay para mostrar el mensaje de éxito
+      setTimeout(() => {
+        onNavigate("home");
+      }, 900);
+
     } catch (err: any) {
-const errorResponse = err.response?.data;
-  let errorText = "Error desconocido";
+      let errorText = "Error desconocido";
 
-  if (errorResponse?.message) {
-    errorText = errorResponse.message;
-  } else if (errorResponse?.errors?.length > 0) {
-    // Extrae el primer error de validación
-    const firstError = errorResponse.errors[0];
-    errorText = `${firstError.field}: ${firstError.defaultMessage}`;
-  }
+      if (err.message) {
+        errorText = err.message;
+      } else if (err.response?.data?.message) {
+        errorText = err.response.data.message;
+      } else if (err.response?.status === 401) {
+        errorText = "Email o contraseña incorrectos";
+      } else if (!err.response) {
+        errorText = "No se pudo conectar con el servidor. Verifica que Spring Boot esté corriendo.";
+      }
 
-  setMessage({ text: errorText, type: 'error' });
-}
+      setMessage({ text: errorText, type: 'error' });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -121,10 +133,10 @@ const errorResponse = err.response?.data;
         {/* Mensaje de feedback */}
         {message && (
           <div
-            className={`p-3 mb-6 rounded-lg text-center ${
+            className={`p-4 mb-6 rounded-xl text-center border ${
               message.type === 'success'
-                ? 'bg-green-800/30 text-green-200 border border-green-600'
-                : 'bg-red-800/30 text-red-200 border border-red-600'
+                ? 'bg-green-900/30 text-green-200 border-green-700'
+                : 'bg-red-900/30 text-red-200 border-red-700'
             }`}
           >
             {message.text}
@@ -152,6 +164,7 @@ const errorResponse = err.response?.data;
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={isSubmitting}
                 className="rounded-lg"
                 style={{
                   backgroundColor: themeColors.bgPrimary,
@@ -173,6 +186,7 @@ const errorResponse = err.response?.data;
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
+                  disabled={isSubmitting}
                   className="rounded-lg"
                   style={{
                     backgroundColor: themeColors.bgPrimary,
@@ -195,6 +209,7 @@ const errorResponse = err.response?.data;
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={isSubmitting}
                 className="rounded-lg"
                 style={{
                   backgroundColor: themeColors.bgPrimary,
@@ -217,6 +232,7 @@ const errorResponse = err.response?.data;
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
+                  disabled={isSubmitting}
                   className="rounded-lg"
                   style={{
                     backgroundColor: themeColors.bgPrimary,
@@ -227,7 +243,7 @@ const errorResponse = err.response?.data;
               </div>
             )}
 
-            {/* Checkbox artista */}
+            {/* Checkbox artista - solo registro */}
             {!isLogin && (
               <div className="flex items-center gap-3">
                 <Checkbox
@@ -236,6 +252,7 @@ const errorResponse = err.response?.data;
                   onCheckedChange={(checked : boolean) => setIsArtist(!!checked)}
                   style={{ borderColor: themeColors.border }}
                   className="data-[state=checked]:bg-[#7B2CBF]"
+                  disabled={isSubmitting}
                 />
                 <Label
                   htmlFor="artist"
@@ -250,6 +267,7 @@ const errorResponse = err.response?.data;
             {/* Submit Button */}
             <Button
               type="submit"
+              disabled={isSubmitting}
               className="w-full rounded-xl transition-all duration-300 hover:scale-105"
               style={{
                 backgroundColor: themeColors.accentPrimary,
@@ -265,7 +283,10 @@ const errorResponse = err.response?.data;
                 e.currentTarget.style.boxShadow = "0 0 20px rgba(123, 44, 191, 0.3)";
               }}
             >
-              {isLogin ? "Iniciar sesión" : "Crear cuenta"}
+              {isSubmitting
+                ? (isLogin ? "Iniciando sesión..." : "Creando cuenta...")
+                : (isLogin ? "Iniciar sesión" : "Crear cuenta")
+              }
             </Button>
 
             {/* Forgot Password (solo login) */}
@@ -287,7 +308,10 @@ const errorResponse = err.response?.data;
             <p style={{ color: themeColors.textSecondary }}>
               {isLogin ? "¿No tienes cuenta? " : "¿Ya tienes cuenta? "}
               <button
-                onClick={() => setIsLogin(!isLogin)}
+                onClick={() => {
+                  setIsLogin(!isLogin);
+                  setMessage(null);
+                }}
                 className="transition-colors"
                 style={{ color: themeColors.accentHover }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = themeColors.accentPrimary)}
