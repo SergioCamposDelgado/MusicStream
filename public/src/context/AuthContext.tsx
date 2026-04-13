@@ -29,7 +29,7 @@ interface AuthContextType {
 
 // ==================== CONFIGURACIÓN DEL BACKEND ====================
 
-const BACKEND_URL = 'http://localhost:9000';   // ← Puerto que estás usando en Spring Boot
+const BACKEND_URL = 'http://localhost:9000';   
 const API_BASE = `${BACKEND_URL}/api`;
 
 const api = axios.create({

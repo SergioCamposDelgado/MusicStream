@@ -76,7 +76,6 @@ export function Auth({
         setMessage({ text: "¡Cuenta creada exitosamente!", type: 'success' });
       }
 
-      // ←←← ESTO ES LO QUE HACE QUE SE GUARDE LA SESIÓN (igual que tu versión original)
       if (onLogin) {
         onLogin(isArtist);
       }
@@ -133,10 +132,11 @@ export function Auth({
         {/* Mensaje de feedback */}
         {message && (
           <div
+            style={{ color: themeColors.textSecondary }}
             className={`p-4 mb-6 rounded-xl text-center border ${
               message.type === 'success'
-                ? 'bg-green-900/30 text-green-200 border-green-700'
-                : 'bg-red-900/30 text-red-200 border-red-700'
+                ? 'bg-green-900/30 border-green-700'
+                : 'bg-red-900/30 border-red-700'
             }`}
           >
             {message.text}
@@ -249,7 +249,7 @@ export function Auth({
                 <Checkbox
                   id="artist"
                   checked={isArtist}
-                  onCheckedChange={(checked : boolean) => setIsArtist(!!checked)}
+                  onCheckedChange={(checked : boolean ) => setIsArtist(!!checked)}
                   style={{ borderColor: themeColors.border }}
                   className="data-[state=checked]:bg-[#7B2CBF]"
                   disabled={isSubmitting}

@@ -11,7 +11,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDTO> handleValidationErrors(MethodArgumentNotValidException ex) {
-        // Extrae el mensaje de tus anotaciones @Size, @NotBlank, etc.
         String firstErrorMessage = ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
 
         ErrorResponseDTO error = ErrorResponseDTO.builder()
