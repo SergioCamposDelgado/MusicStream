@@ -3,6 +3,8 @@ package com.musicstream.service;
 import com.musicstream.dto.RegisterRequestDTO;
 import com.musicstream.dto.UserProfileDTO;
 import com.musicstream.dto.UserUpdateDTO;
+import com.musicstream.dto.AdminUserCreateDTO;
+import com.musicstream.dto.AdminUserUpdateDTO;
 import com.musicstream.entity.User;
 import com.musicstream.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -60,6 +64,7 @@ public class UserService {
                 .avatarUrl(user.getAvatarUrl())
                 .isArtist(user.isArtist())
                 .isAdmin(user.isAdmin())
+                .locked(user.isLocked())
                 .createdAt(user.getCreatedAt())
                 .build();
     }
@@ -162,5 +167,95 @@ public class UserService {
     // Opcional: Método simple para obtener el usuario actual como entidad
     public User getCurrentUserEntity() {
         return getCurrentAuthenticatedUser();
+    }
+
+    // ───────────────────────────────────────────────
+    // Métodos de Administración
+    // ───────────────────────────────────────────────
+
+    public List<UserProfileDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(user -> UserProfileDTO.builder()
+                        .id(user.getId())
+                        .name(user.getName())
+                        .email(user.getEmail())
+                        .avatarUrl(user.getAvatarUrl())
+                        .isArtist(user.isArtist())
+                        .isAdmin(user.isAdmin())
+                        .locked(user.isLocked())
+                        .createdAt(user.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public UserProfileDTO adminCreateUser(AdminUserCreateDTO dto) {
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new IllegalArgumentException("El email ya está registrado");
+        }
+
+        User user = User.builder()
+                .name(dto.getName())
+                .email(dto.getEmail())
+                .password(passwordEncoder.encode(dto.getPassword()))
+                .isArtist(dto.isArtist())
+                .isAdmin(dto.isAdmin())
+                .locked(dto.isLocked())
+                .build();
+
+        user = userRepository.save(user);
+        return getUserProfile(user.getId());
+    }
+
+    @Transactional
+    public UserProfileDTO adminUpdateUser(Long id, AdminUserUpdateDTO dto) {
+        User user = getUserOrThrow(id);
+
+        // Si cambia el email, verificar que no exista ya
+        if (!user.getEmail().equals(dto.getEmail()) && userRepository.existsByEmail(dto.getEmail())) {
+            throw new IllegalArgumentException("El email ya está en uso");
+        }
+
+        user.setName(dto.getName().trim());
+        user.setEmail(dto.getEmail().trim());
+        user.setArtist(dto.isArtist());
+        user.setLocked(dto.isLocked());
+
+        // Evitar que el último admin se quite a sí mismo el rol, o simplemente confiar en el frontend
+        user.setAdmin(dto.isAdmin());
+
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
+
+        user = userRepository.save(user);
+        return getUserProfile(user.getId());
+    }
+
+    @Transactional
+    public UserProfileDTO toggleUserBlock(Long id) {
+        User user = getUserOrThrow(id);
+        
+        // Evitar bloquearse a sí mismo
+        User current = getCurrentAuthenticatedUser();
+        if (current.getId().equals(id)) {
+            throw new IllegalArgumentException("No puedes bloquearte a ti mismo");
+        }
+
+        user.setLocked(!user.isLocked());
+        user = userRepository.save(user);
+        return getUserProfile(user.getId());
+    }
+
+    @Transactional
+    public void deleteUser(Long id) {
+        User user = getUserOrThrow(id);
+        
+        User current = getCurrentAuthenticatedUser();
+        if (current.getId().equals(id)) {
+            throw new IllegalArgumentException("No puedes eliminarte a ti mismo");
+        }
+
+        userRepository.delete(user);
     }
 }

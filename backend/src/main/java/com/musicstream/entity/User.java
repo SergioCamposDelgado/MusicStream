@@ -64,6 +64,10 @@ public class User implements UserDetails {
     @Builder.Default
     private boolean isAdmin = false;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean locked = false;
+
     // Auditoría
     @CreatedDate
     @Column(updatable = false)
@@ -109,7 +113,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return !locked;
     }
 
     @Override

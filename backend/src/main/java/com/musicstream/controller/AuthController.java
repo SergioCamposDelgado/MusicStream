@@ -7,6 +7,7 @@ import com.musicstream.dto.RegisterRequestDTO;
 import com.musicstream.entity.User;
 import com.musicstream.exception.EmailAlreadyExistsException;
 import com.musicstream.service.AuthService;
+import com.musicstream.security.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -22,13 +23,33 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controlador REST para la autenticación de usuarios.
+ *
+ * <p>Gestiona el ciclo completo de autenticación basado en tokens JWT stateless:
+ * registro, inicio de sesión, consulta del perfil propio y cierre de sesión.</p>
+ *
+ * <p>Rutas expuestas (configuradas como públicas en {@code SecurityConfig}):</p>
+ * <ul>
+ *   <li>{@code POST /api/auth/register} — Crea una nueva cuenta de usuario</li>
+ *   <li>{@code POST /api/auth/login}    — Autentica credenciales y devuelve un JWT</li>
+ *   <li>{@code GET  /api/auth/me}       — Retorna el perfil del usuario autenticado</li>
+ *   <li>{@code POST /api/auth/logout}   — Limpia el contexto de seguridad del servidor</li>
+ * </ul>
+ */
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
+    /** Servicio con la lógica de negocio de autenticación y registro. */
     private final AuthService authService;
+
+    /** Gestor de autenticación de Spring Security (valida credenciales contra la base de datos). */
     private final AuthenticationManager authenticationManager;
+
+    /** Componente para generar y validar tokens JWT. */
+    private final JwtTokenProvider tokenProvider;
 
     /**
      * Registro de nuevo usuario
@@ -51,12 +72,16 @@ public class AuthController {
 
             User newUser = authService.register(request);
 
+            Authentication auth = new UsernamePasswordAuthenticationToken(newUser.getEmail(), null);
+            String token = tokenProvider.generateToken(auth);
+
             AuthResponseDTO response = AuthResponseDTO.builder()
                     .email(newUser.getEmail())
                     .name(newUser.getName())
                     .avatarUrl(newUser.getAvatarUrl())
                     .isArtist(newUser.isArtist())
                     .isAdmin(newUser.isAdmin())
+                    .token(token)
                     .build();
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -111,9 +136,7 @@ public class AuthController {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            // Crear/actualizar sesión
-            HttpSession session = httpRequest.getSession(true);
-            session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+            String token = tokenProvider.generateToken(authentication);
 
             User user = (User) authentication.getPrincipal();
 
@@ -123,6 +146,7 @@ public class AuthController {
                     .avatarUrl(user.getAvatarUrl())
                     .isArtist(user.isArtist())
                     .isAdmin(user.isAdmin())
+                    .token(token)
                     .build();
 
             return ResponseEntity.ok(response);
@@ -178,11 +202,7 @@ public class AuthController {
      * Cierre de sesión
      */
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
+    public ResponseEntity<String> logout() {
         SecurityContextHolder.clearContext();
         return ResponseEntity.ok("Sesión cerrada correctamente");
     }

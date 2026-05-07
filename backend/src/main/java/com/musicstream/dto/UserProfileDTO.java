@@ -18,6 +18,7 @@ public class UserProfileDTO {
 
     private boolean isArtist;
     private boolean isAdmin;
+    private boolean locked;
 
     private LocalDateTime createdAt;
 
