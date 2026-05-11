@@ -1,4 +1,4 @@
-import { ThemeColors } from "../App";
+import { ThemeColors } from "../context/ThemeContext";
 
 export const defaultColors: ThemeColors = {
   bgPrimary: "#0F0A1A",

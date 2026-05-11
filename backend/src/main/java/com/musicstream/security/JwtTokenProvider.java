@@ -9,6 +9,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.security.Key;
 import java.util.Date;
@@ -30,12 +31,13 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    // Clave secreta para firmar los tokens (min. 256 bits para HMAC-SHA256).
-    // TODO: mover a application.properties o variable de entorno en producción.
-    private final String jwtSecret = "estaEsUnaClaveSecretaMuyLargaYSeguraParaMusicStream2026!";
+    // Clave secreta para firmar los tokens (inyectada desde properties)
+    @Value("${app.jwt.secret}")
+    private String jwtSecret;
 
-    // Duración del token: 7 días en milisegundos (7 * 24 * 60 * 60 * 1000).
-    private final long jwtExpirationMs = 604800000L;
+    // Duración del token (inyectada desde properties)
+    @Value("${app.jwt.expiration-ms}")
+    private long jwtExpirationMs;
 
     /** Construye la clave de firma HMAC a partir de la cadena secreta. */
     private Key getSigningKey() {

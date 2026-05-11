@@ -4,7 +4,6 @@ import com.musicstream.dto.RegisterRequestDTO;
 import com.musicstream.dto.AuthResponseDTO;
 import com.musicstream.entity.User;
 import com.musicstream.repository.UserRepository;
-import com.musicstream.exception.EmailAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,11 +40,11 @@ public class AuthService {
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .avatarUrl(dto.getAvatarUrl() != null ? dto.getAvatarUrl() : null)
                 .isArtist(dto.isArtist())
-                .isAdmin(false)           // Nadie se registra como admin
+                .isAdmin(false) // Nadie se registra como admin
                 .build();
 
         return userRepository.save(user);
-    }	
+    }
 
     /**
      * Autenticación manual (útil para API REST con /login endpoint)
@@ -53,8 +52,7 @@ public class AuthService {
      */
     public AuthResponseDTO login(String email, String password) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(email, password)
-        );
+                new UsernamePasswordAuthenticationToken(email, password));
 
         User user = (User) authentication.getPrincipal();
 
@@ -66,7 +64,7 @@ public class AuthService {
                 .name(user.getName())
                 .isArtist(user.isArtist())
                 .isAdmin(user.isAdmin())
-                // .token(token)   // si implementas JWT
+                // .token(token) // si implementas JWT
                 .build();
     }
 }

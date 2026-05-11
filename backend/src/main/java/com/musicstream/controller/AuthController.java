@@ -9,7 +9,6 @@ import com.musicstream.exception.EmailAlreadyExistsException;
 import com.musicstream.service.AuthService;
 import com.musicstream.security.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,22 +18,27 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 /**
  * Controlador REST para la autenticación de usuarios.
  *
- * <p>Gestiona el ciclo completo de autenticación basado en tokens JWT stateless:
- * registro, inicio de sesión, consulta del perfil propio y cierre de sesión.</p>
+ * <p>
+ * Gestiona el ciclo completo de autenticación basado en tokens JWT stateless:
+ * registro, inicio de sesión, consulta del perfil propio y cierre de sesión.
+ * </p>
  *
- * <p>Rutas expuestas (configuradas como públicas en {@code SecurityConfig}):</p>
+ * <p>
+ * Rutas expuestas (configuradas como públicas en {@code SecurityConfig}):
+ * </p>
  * <ul>
- *   <li>{@code POST /api/auth/register} — Crea una nueva cuenta de usuario</li>
- *   <li>{@code POST /api/auth/login}    — Autentica credenciales y devuelve un JWT</li>
- *   <li>{@code GET  /api/auth/me}       — Retorna el perfil del usuario autenticado</li>
- *   <li>{@code POST /api/auth/logout}   — Limpia el contexto de seguridad del servidor</li>
+ * <li>{@code POST /api/auth/register} — Crea una nueva cuenta de usuario</li>
+ * <li>{@code POST /api/auth/login} — Autentica credenciales y devuelve un
+ * JWT</li>
+ * <li>{@code GET  /api/auth/me} — Retorna el perfil del usuario
+ * autenticado</li>
+ * <li>{@code POST /api/auth/logout} — Limpia el contexto de seguridad del
+ * servidor</li>
  * </ul>
  */
 @RestController
@@ -45,7 +49,10 @@ public class AuthController {
     /** Servicio con la lógica de negocio de autenticación y registro. */
     private final AuthService authService;
 
-    /** Gestor de autenticación de Spring Security (valida credenciales contra la base de datos). */
+    /**
+     * Gestor de autenticación de Spring Security (valida credenciales contra la
+     * base de datos).
+     */
     private final AuthenticationManager authenticationManager;
 
     /** Componente para generar y validar tokens JWT. */
@@ -58,16 +65,15 @@ public class AuthController {
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO request) {
 
         try {
-            if (request.getConfirmPassword() != null && 
-                !request.getPassword().equals(request.getConfirmPassword())) {
+            if (request.getConfirmPassword() != null &&
+                    !request.getPassword().equals(request.getConfirmPassword())) {
 
                 return ResponseEntity.badRequest().body(
-                    ErrorResponseDTO.builder()
-                        .message("Las contraseñas no coinciden")
-                        .errorCode("PASSWORD_MISMATCH")
-                        .status(400)
-                        .build()
-                );
+                        ErrorResponseDTO.builder()
+                                .message("Las contraseñas no coinciden")
+                                .errorCode("PASSWORD_MISMATCH")
+                                .status(400)
+                                .build());
             }
 
             User newUser = authService.register(request);
@@ -86,35 +92,31 @@ public class AuthController {
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
-        } 
-        catch (EmailAlreadyExistsException e) {
+        } catch (EmailAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                ErrorResponseDTO.builder()
-                    .message(e.getMessage())
-                    .errorCode("EMAIL_ALREADY_EXISTS")
-                    .status(409)
-                    .build()
-            );
-        } 
-        
+                    ErrorResponseDTO.builder()
+                            .message(e.getMessage())
+                            .errorCode("EMAIL_ALREADY_EXISTS")
+                            .status(409)
+                            .build());
+        }
+
         catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(
-                ErrorResponseDTO.builder()
-                    .message(e.getMessage())
-                    .errorCode("BAD_REQUEST")
-                    .status(400)
-                    .build()
-            );
+                    ErrorResponseDTO.builder()
+                            .message(e.getMessage())
+                            .errorCode("BAD_REQUEST")
+                            .status(400)
+                            .build());
         }
 
         catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                ErrorResponseDTO.builder()
-                    .message("Error al registrar el usuario")
-                    .errorCode("REGISTRATION_ERROR")
-                    .status(500)
-                    .build()
-            );
+                    ErrorResponseDTO.builder()
+                            .message("Error al registrar el usuario")
+                            .errorCode("REGISTRATION_ERROR")
+                            .status(500)
+                            .build());
         }
     }
 
@@ -130,9 +132,7 @@ public class AuthController {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getEmail(),
-                            request.getPassword()
-                    )
-            );
+                            request.getPassword()));
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -151,7 +151,7 @@ public class AuthController {
 
             return ResponseEntity.ok(response);
 
-        } 
+        }
         // Credenciales incorrectas
         catch (BadCredentialsException e) {
             ErrorResponseDTO error = ErrorResponseDTO.builder()
@@ -160,7 +160,7 @@ public class AuthController {
                     .status(401)
                     .build();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
-        } 
+        }
         // Errores de validación (@Valid)
 
         // Otros errores

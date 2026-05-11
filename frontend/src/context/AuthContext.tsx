@@ -54,7 +54,7 @@ interface AuthContextType {
 
 // ==================== CONFIGURACIÓN DE AXIOS ====================
 
-const BACKEND_URL = 'http://localhost:9000';   
+const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:9000';   
 const API_BASE = `${BACKEND_URL}/api`;
 
 export const api = axios.create({

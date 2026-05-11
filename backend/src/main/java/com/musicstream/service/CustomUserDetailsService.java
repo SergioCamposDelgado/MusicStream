@@ -1,6 +1,5 @@
 package com.musicstream.service;
 
-import com.musicstream.entity.User;
 import com.musicstream.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,7 +17,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(
-                        "Usuario no encontrado con email: " + email
-                ));
+                        "Usuario no encontrado con email: " + email));
     }
 }

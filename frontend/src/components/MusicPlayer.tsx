@@ -46,13 +46,13 @@ export function MusicPlayer() {
               } as React.CSSProperties
             }
 
-            onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+            onMouseEnter={(e: React.MouseEvent<HTMLElement>) => {
               if (theme === "dark") {
                 e.currentTarget.style.boxShadow =
                   "0 0 30px rgba(157, 78, 221, 0.5)";
               }
             }}
-            onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+            onMouseLeave={(e: React.MouseEvent<HTMLElement>) => {
               if (theme === "dark") {
                 e.currentTarget.style.boxShadow =
                   "0 0 20px rgba(123, 44, 191, 0.3)";
@@ -198,13 +198,13 @@ export function MusicPlayer() {
                   } as React.CSSProperties
                 }
 
-                onMouseEnter={(e: React.MouseEvent<HTMLButtonElement>) => {
+                onMouseEnter={(e: React.MouseEvent<HTMLElement>) => {
                   if (theme === "dark") {
                     e.currentTarget.style.boxShadow =
                       "0 0 30px rgba(157, 78, 221, 0.5)";
                   }
                 }}
-                onMouseLeave={(e: React.MouseEvent<HTMLButtonElement>) => {
+                onMouseLeave={(e: React.MouseEvent<HTMLElement>) => {
                   if (theme === "dark") {
                     e.currentTarget.style.boxShadow =
                       "0 0 20px rgba(123, 44, 191, 0.3)";

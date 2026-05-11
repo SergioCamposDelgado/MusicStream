@@ -1,15 +1,15 @@
 import {
   User,
-    Mail,
-    Calendar,
-    Music2,
-    Heart,
-    Settings,
-    LogOut,
-    TrendingUp,
-    Shield,
-    Camera,
-    Loader2,
+  Mail,
+  Calendar,
+  Music2,
+  Heart,
+  Settings,
+  LogOut,
+  TrendingUp,
+  Shield,
+  Camera,
+  Loader2,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -178,14 +178,14 @@ export function Account() {
             {/* Avatar */}
             <div className="relative flex-shrink-0">
               <Avatar
-                className="w-24 h-24 md:w-32 md:h-32 border-4"
-                style={{ borderColor: themeColors.accentHover }}
+                className="w-24 h-24 md:w-32 md:h-32 border-4 force-dark-avatar"
+                style={{ borderColor: "#7B2CBF" }}
               >
                 <AvatarImage src={currentAvatar} alt={userName} />
                 <AvatarFallback
                   style={{
-                    backgroundColor: themeColors.accentPrimary,
-                    color: themeColors.textPrimary,
+                    backgroundColor: "#7B2CBF !important",
+                    color: "#E8E1FF !important",
                   }}
                 >
                   <User className="w-12 h-12 md:w-16 md:h-16" />
@@ -204,19 +204,19 @@ export function Account() {
                 disabled={isSubmitting || isUploadingAvatar}
                 className="absolute bottom-0 right-0 w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 disabled:opacity-50"
                 style={{
-                  backgroundColor: themeColors.accentPrimary,
-                  border: `2px solid ${themeColors.bgSecondary}`,
+                  backgroundColor: "#7B2CBF",
+                  border: "2px solid #1A0F2E",
                 }}
               >
                 {isUploadingAvatar ? (
                   <Loader2
                     className="w-4 h-4 md:w-5 md:h-5 animate-spin"
-                    style={{ color: themeColors.textPrimary }}
+                    style={{ color: "#E8E1FF" }}
                   />
                 ) : (
                   <Camera
                     className="w-4 h-4 md:w-5 md:h-5"
-                    style={{ color: themeColors.textPrimary }}
+                    style={{ color: "#E8E1FF" }}
                   />
                 )}
               </button>
@@ -257,7 +257,7 @@ export function Account() {
                       id="email"
                       type="email"
                       value={userEmail}
-                      disabled // Pedido: Email sin que se pueda cambiar
+                      disabled
                       className="mt-2 rounded-lg opacity-60 cursor-not-allowed"
                       style={{
                         backgroundColor: themeColors.bgPrimary,
@@ -470,41 +470,7 @@ export function Account() {
             Configuración de Cuenta
           </h3>
           <div className="space-y-3">
-            {/* Admin Mode Toggle */}
-            <div
-              className="flex items-center justify-between p-4 rounded-lg"
-              style={{
-                backgroundColor: themeColors.bgPrimary,
-                border: `1px solid ${themeColors.border}`,
-              }}
-            >
-              <div className="flex items-center gap-3">
-                <Shield
-                  className="w-5 h-5"
-                  style={{ color: themeColors.accentPrimary }}
-                />
-                <div>
-                  <h4
-                    className="mb-1 font-medium"
-                    style={{ color: themeColors.textPrimary }}
-                  >
-                    Modo Administrador
-                  </h4>
-                  <p
-                    style={{
-                      color: themeColors.textSecondary,
-                      fontSize: "0.875rem",
-                    }}
-                  >
-                    Activa privilegios de administración
-                  </p>
-                </div>
-              </div>
-              <Switch
-                checked={user?.isAdmin || false}
-                onCheckedChange={handleAdminToggle}
-              />
-            </div>
+
 
             <Button
               className="w-full justify-start rounded-lg transition-colors"

@@ -8,7 +8,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,7 +22,8 @@ public class UserController {
      */
     @GetMapping("/me")
     public ResponseEntity<UserProfileDTO> getMyProfile(@AuthenticationPrincipal User user) {
-        // @AuthenticationPrincipal inyecta directamente el User (porque implementa UserDetails)
+        // @AuthenticationPrincipal inyecta directamente el User (porque implementa
+        // UserDetails)
         UserProfileDTO profile = userService.getUserProfile(user.getId());
         return ResponseEntity.ok(profile);
     }

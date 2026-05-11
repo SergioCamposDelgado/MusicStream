@@ -14,9 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +25,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     // ───────────────────────────────────────────────
-    // Registro (usualmente llamado desde AuthService, pero también puede estar aquí)
+    // Registro (usualmente llamado desde AuthService, pero también puede estar
+    // aquí)
     // ───────────────────────────────────────────────
     @Transactional
     public User register(RegisterRequestDTO dto) {
@@ -45,7 +44,7 @@ public class UserService {
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .avatarUrl(dto.getAvatarUrl() != null ? dto.getAvatarUrl() : null)
                 .isArtist(dto.isArtist())
-                .isAdmin(false)           // Nadie se registra como admin
+                .isAdmin(false) // Nadie se registra como admin
                 .build();
 
         return userRepository.save(user);
@@ -221,7 +220,8 @@ public class UserService {
         user.setArtist(dto.isArtist());
         user.setLocked(dto.isLocked());
 
-        // Evitar que el último admin se quite a sí mismo el rol, o simplemente confiar en el frontend
+        // Evitar que el último admin se quite a sí mismo el rol, o simplemente confiar
+        // en el frontend
         user.setAdmin(dto.isAdmin());
 
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
@@ -235,7 +235,7 @@ public class UserService {
     @Transactional
     public UserProfileDTO toggleUserBlock(Long id) {
         User user = getUserOrThrow(id);
-        
+
         // Evitar bloquearse a sí mismo
         User current = getCurrentAuthenticatedUser();
         if (current.getId().equals(id)) {
@@ -250,7 +250,7 @@ public class UserService {
     @Transactional
     public void deleteUser(Long id) {
         User user = getUserOrThrow(id);
-        
+
         User current = getCurrentAuthenticatedUser();
         if (current.getId().equals(id)) {
             throw new IllegalArgumentException("No puedes eliminarte a ti mismo");

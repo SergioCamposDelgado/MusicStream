@@ -19,15 +19,19 @@ import java.io.IOException;
 /**
  * Filtro de autenticación JWT que se ejecuta una vez por petición HTTP.
  *
- * <p>Intercepta cada solicitud entrante, extrae el token JWT del encabezado
+ * <p>
+ * Intercepta cada solicitud entrante, extrae el token JWT del encabezado
  * {@code Authorization: Bearer <token>}, lo valida y, si es correcto,
  * carga el {@link org.springframework.security.core.userdetails.UserDetails}
  * correspondiente y establece la autenticación en el
- * {@link org.springframework.security.core.context.SecurityContext}.</p>
+ * {@link org.springframework.security.core.context.SecurityContext}.
+ * </p>
  *
- * <p>Si el token no está presente o no es válido, la cadena de filtros
+ * <p>
+ * Si el token no está presente o no es válido, la cadena de filtros
  * continúa sin establecer autenticación, lo que permitirá que
- * {@code SecurityConfig} rechace la petición con 401 si la ruta está protegida.</p>
+ * {@code SecurityConfig} rechace la petición con 401 si la ruta está protegida.
+ * </p>
  */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -49,8 +53,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+            HttpServletResponse response,
+            FilterChain filterChain) throws ServletException, IOException {
         try {
             String jwt = getJwtFromRequest(request);
 

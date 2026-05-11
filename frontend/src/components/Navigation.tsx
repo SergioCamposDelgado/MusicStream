@@ -135,20 +135,16 @@ export function Navigation() {
                 className="transition-all duration-200 hover:scale-105"
               >
                 <Avatar
-                  className="w-8 h-8 border-2"
+                  className="w-8 h-8 border-2 force-dark-avatar"
                   style={{
-                    borderColor:
-                      location.pathname === "/account"
-                        ? themeColors.accentHover
-                        : themeColors.border,
+                    borderColor: "#7B2CBF",
                   }}
                 >
                   <AvatarImage src={user?.avatarUrl} alt="Usuario" />
                   <AvatarFallback
                     style={{
-                      backgroundColor:
-                        themeColors.accentPrimary,
-                      color: themeColors.textPrimary,
+                      backgroundColor: "#7B2CBF !important",
+                      color: "#E8E1FF !important",
                     }}
                   >
                     <User className="w-4 h-4" />
