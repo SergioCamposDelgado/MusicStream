@@ -1,0 +1,72 @@
+services:
+  # Database Service
+  db:
+    image: postgres:15-alpine
+    container_name: musicstream-db
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - musicstream-network
+
+  # Backend (Spring Boot API)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: musicstream-api
+    restart: always
+    environment:
+      - DB_URL=jdbc:postgresql://db:5432/${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATION=${JWT_EXPIRATION}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - UPLOAD_DIR=${UPLOAD_DIR}
+    volumes:
+      - ./backend/uploads:${UPLOAD_DIR}
+    networks:
+      - musicstream-network
+    # El puerto 9000 ahora es interno, solo accesible vía Nginx
+
+  # Frontend (React + Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL}
+    container_name: musicstream-web
+    restart: always
+    networks:
+      - musicstream-network
+    # El puerto 80 ahora es interno, solo accesible vía Nginx
+
+  # Nginx Proxy Manager (Gestión de SSL y Dominios)
+  nginx-proxy:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: musicstream-proxy
+    restart: always
+    ports:
+      - '80:80'   # HTTP público
+      - '443:443' # HTTPS público
+      - '81:81'   # Panel de administración (Abrir solo para configurar)
+    volumes:
+      - ./proxy/data:/data
+      - ./proxy/letsencrypt:/etc/letsencrypt
+    networks:
+      - musicstream-network
+
+networks:
+  musicstream-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  proxy_data:
+  proxy_letsencrypt:
