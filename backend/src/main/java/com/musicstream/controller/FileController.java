@@ -18,7 +18,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileController {
 
   private final FileStorageService fileStorageService;
-  private static final String BASE_URL = "http://localhost:9000/api/files";
+
+  @org.springframework.beans.factory.annotation.Value("${app.files.base-url}")
+  private String baseUrl;
 
   // ─────────────────────────────────────────────────────────────────────────
   // Upload endpoints (require JWT auth - configured in SecurityConfig)
@@ -31,7 +33,7 @@ public class FileController {
   @PostMapping("/upload/image")
   public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("file") MultipartFile file) {
     String filename = fileStorageService.storeImage(file);
-    String url = BASE_URL + "/images/" + filename;
+    String url = baseUrl + "/images/" + filename;
     return ResponseEntity.ok(Map.of("url", url, "filename", filename));
   }
 
@@ -42,7 +44,7 @@ public class FileController {
   @PostMapping("/upload/audio")
   public ResponseEntity<Map<String, String>> uploadAudio(@RequestParam("file") MultipartFile file) {
     String filename = fileStorageService.storeAudio(file);
-    String url = BASE_URL + "/audio/" + filename;
+    String url = baseUrl + "/audio/" + filename;
     return ResponseEntity.ok(Map.of("url", url, "filename", filename));
   }
 

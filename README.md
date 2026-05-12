@@ -1,60 +1,67 @@
 # 🎵 MusicStream - Plataforma de Streaming de Música
 
-MusicStream es una aplicación completa de streaming de música construida con una arquitectura moderna de **Spring Boot** para el backend y **React** para el frontend. La plataforma incluye gestión de usuarios, roles de artista/administrador, reproducción de audio en tiempo real y un diseño premium con estética *glassmorphism*.
+MusicStream es una aplicación completa de streaming de música construida con una arquitectura moderna. La plataforma incluye gestión de usuarios, roles de artista/administrador, reproducción de audio en tiempo real y un diseño premium con estética *glassmorphism*.
 
-## 🏗️ Estructura del Proyecto
+## 🏗️ Arquitectura del Proyecto
 
-El repositorio está dividido en dos grandes bloques:
+El proyecto está diseñado para ser desplegado de forma profesional y segura mediante contenedores:
 
-- **/backend**: API REST desarrollada en Java con Spring Boot, Spring Security (JWT) y PostgreSQL.
-- **/frontend**: Aplicación SPA desarrollada en React 18, Vite, Tailwind CSS y componentes de shadcn/ui.
+- **Backend**: API REST con Spring Boot 4.0.6, Spring Security (JWT) y persistencia en PostgreSQL 15.
+- **Frontend**: Aplicación SPA con React 18.3, Vite 6.4 y componentes de alta calidad.
+- **Infraestructura**: Despliegue orquestado con Docker Compose.
+- **Seguridad**: Proxy Inverso con Nginx Proxy Manager y certificados SSL automáticos (Let's Encrypt).
 
-## 🚀 Requisitos Previos
+---
 
-Antes de empezar, asegúrate de tener instalado:
+## 🚀 Despliegue Rápido (Docker)
 
-- **Java 17** o superior.
-- **Maven 3.8+**.
-- **Node.js 18+** y npm.
-- **PostgreSQL 14+** (corriendo en el puerto 5432).
+La forma recomendada de ejecutar MusicStream es mediante Docker Compose.
 
-## 🛠️ Instalación Rápida
-
-### 1. Clonar el repositorio
+### 1. Preparación
+Copia el archivo de ejemplo de variables de entorno y edítalo con tus credenciales:
 ```bash
-git clone https://github.com/tu-usuario/MusicStream.git
-cd MusicStream
+cp .env.example .env
+nano .env
 ```
 
-### 2. Configurar la Base de Datos
-Crea una base de datos en PostgreSQL llamada `musicstream`:
-```sql
-CREATE DATABASE musicstream;
-```
-*Nota: Puedes ajustar las credenciales en `backend/src/main/resources/application.properties`.*
-
-### 3. Ejecutar el Backend
+### 2. Lanzar la aplicación
 ```bash
-cd backend
-mvn spring-boot:run
+docker compose up -d --build
 ```
-La API estará disponible en `http://localhost:9000`.
 
-### 4. Ejecutar el Frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
-La aplicación web estará disponible en `http://localhost:3000`.
+Esto levantará 4 servicios:
+- `musicstream-db`: Base de datos PostgreSQL.
+- `musicstream-api`: Servidor backend en el puerto 9000 (interno).
+- `musicstream-web`: Servidor frontend en el puerto 80 (interno).
+- `musicstream-proxy`: Panel de gestión Nginx Proxy Manager (Puertos 80, 443 y 81).
 
-## 🛡️ Cuentas de Prueba (Seed Data)
+---
 
-Al arrancar el backend por primera vez, se creará automáticamente un usuario administrador:
+## 🛠️ Configuración de Producción (HTTPS)
 
-- **Email:** `admin@musicstream.com`
-- **Password:** `1234`
+Una vez levantados los contenedores:
+1. Accede al panel de gestión en `http://tu-ip:81` (Admin: `admin@example.com` / Pass: `changeme`).
+2. Configura un **Proxy Host** para tu dominio apuntando al hostname `frontend` en el puerto `80`.
+3. Añade una **Custom Location** `/api` apuntando al hostname `backend` en el puerto `9000`.
+4. Solicita tu certificado SSL gratuito de Let's Encrypt desde la pestaña **SSL**.
 
-## 📄 Licencia
+---
 
-Este proyecto es para uso educativo y personal. Desarrollado por Sergio Campos Delgado.
+## 🛡️ Cuentas de Prueba
+
+El sistema inicializa automáticamente las siguientes cuentas si la base de datos está vacía:
+
+| Rol | Email | Password |
+| :--- | :--- | :--- |
+| **Administrador** | `admin@musicstream.com` | `1234` |
+| **Artista** | `artista@demo.com` | `1234` |
+| **Usuario** | `usuario@prueba.com` | `1234` |
+
+---
+
+## 📄 Créditos y Licencia
+
+Desarrollado por **Sergio Campos Delgado** como proyecto final de Ciclo Formativo de Grado Superior.
+- Backend: Java / Spring Boot.
+- Frontend: React / Vite / Tailwind CSS.
+- DevOps: Docker / Nginx Proxy Manager.

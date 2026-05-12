@@ -3,8 +3,8 @@
 Interfaz de usuario moderna y reactiva para la plataforma MusicStream, construida con React y diseñada para ofrecer una experiencia premium.
 
 ## 🛠️ Tecnologías
-- **React 18** + **TypeScript**
-- **Vite** (Build tool ultra-rápida)
+- **React 18.3** + **TypeScript 6.0**
+- **Vite 6.4** (Build tool ultra-rápida)
 - **Tailwind CSS** (Estilos utilitarios)
 - **Lucide React** (Iconografía)
 - **Axios** (Cliente HTTP con interceptores JWT)
@@ -29,7 +29,7 @@ src/
 - **Floating Labels:** Inputs interactivos con animaciones fluidas.
 
 ## 🔗 Conexión con la API
-La URL base del backend se configura en `src/context/AuthContext.tsx`. Por defecto es `http://localhost:9000/api`.
+La URL base del backend se configura mediante la variable de entorno `VITE_API_URL`. Por defecto es `http://localhost:9000/api`.
 
 El sistema utiliza un **Interceptor de Axios** que:
 1. Recupera el token JWT del `localStorage`.

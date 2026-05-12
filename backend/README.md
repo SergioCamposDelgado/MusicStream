@@ -3,11 +3,11 @@
 Esta es la API REST central de MusicStream, encargada de la lógica de negocio, persistencia de datos y seguridad.
 
 ## 🛠️ Tecnologías
-- **Java 17** (OpenJDK)
-- **Spring Boot 3.x**
+- **Java 21**
+- **Spring Boot 4.0.6**
 - **Spring Data JPA** (Hibernate)
 - **Spring Security + JWT** (Autenticación Stateless)
-- **PostgreSQL**
+- **PostgreSQL 15**
 - **Lombok**
 - **Jakarta Validation**
 
@@ -31,6 +31,7 @@ El archivo principal de configuración es `src/main/resources/application.proper
 - `server.port=9000`: Puerto donde corre la API.
 - `spring.datasource.url`: URL de conexión a PostgreSQL.
 - `file.upload-dir=./uploads`: Directorio local para guardar audios e imágenes.
+- `app.files.base-url`: URL base pública para servir archivos (Configurable vía `FILES_BASE_URL`).
 
 ## 🔐 Seguridad (JWT)
 El backend utiliza un flujo **stateless**. Tras un login exitoso, se devuelve un token JWT que el cliente debe enviar en el encabezado `Authorization: Bearer <token>` para las rutas protegidas.
