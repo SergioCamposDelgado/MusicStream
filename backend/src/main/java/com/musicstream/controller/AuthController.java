@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 /** Controlador REST para la gestión de autenticación y registro de usuarios. */
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 

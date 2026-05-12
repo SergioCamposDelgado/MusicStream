@@ -43,26 +43,26 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             auth ->
                 auth.requestMatchers(
-                        "/api/auth/register",
-                        "/api/auth/login",
-                        "/api/auth/me",
-                        "/api/auth/logout",
+                        "/auth/register",
+                        "/auth/login",
+                        "/auth/me",
+                        "/auth/logout",
                         "/error",
                         "/actuator/health")
                     .permitAll()
-                    // Acceso público a recursos multimedia
-                    .requestMatchers("/api/files/images/**")
+                    // Acceso público a recursos multimedia (rutas relativas al context-path /api)
+                    .requestMatchers("/files/images/**")
                     .permitAll()
-                    .requestMatchers("/api/files/audio/**")
+                    .requestMatchers("/files/audio/**")
                     .permitAll()
                     // Rutas protegidas por rol y autenticación
-                    .requestMatchers("/api/files/upload/**")
+                    .requestMatchers("/files/upload/**")
                     .authenticated()
-                    .requestMatchers("/api/users/**")
+                    .requestMatchers("/users/**")
                     .authenticated()
-                    .requestMatchers("/api/admin/**")
+                    .requestMatchers("/admin/**")
                     .hasRole("ADMIN")
-                    .requestMatchers("/api/artist/**")
+                    .requestMatchers("/artist/**")
                     .hasRole("ARTIST")
                     .anyRequest()
                     .authenticated())
