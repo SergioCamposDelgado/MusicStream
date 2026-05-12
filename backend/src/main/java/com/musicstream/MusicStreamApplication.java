@@ -6,9 +6,9 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication
 @EnableAsync
-public class MusicStreamApplication {  
+public class MusicStreamApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(MusicStreamApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(MusicStreamApplication.class, args);
+  }
 }

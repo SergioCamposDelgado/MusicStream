@@ -9,12 +9,12 @@ import lombok.*;
 @AllArgsConstructor
 public class UserUpdateDTO {
 
-    @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
-    private String name;
+  @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
+  private String name;
 
-    private String avatarUrl;
+  private String avatarUrl;
 
-    // Opcional: si permites cambiar contraseña desde perfil
-    private String currentPassword;
-    private String newPassword;
+  // Opcional: si permites cambiar contraseña desde perfil
+  private String currentPassword;
+  private String newPassword;
 }

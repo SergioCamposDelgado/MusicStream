@@ -1,27 +1,9 @@
 /**
- * @file AuthContext.tsx
- * @description Contexto global de autenticación para MusicStream.
- *
- * Proporciona a toda la aplicación el estado del usuario autenticado y las
- * funciones para iniciar sesión, registrarse, cerrar sesión y actualizar el perfil.
- *
- * La autenticación se basa en tokens JWT almacenados en localStorage.
- * El interceptor de Axios adjunta automáticamente el token en cada petición.
- *
- * Notas de implementación:
- * - Jackson serializa `boolean isAdmin` → `admin` (sin prefijo "is").
- *   La función `normalizeUser` normaliza este comportamiento.
- * - `isAuthenticated` se deriva de `!!user` para simplificar las comprobaciones
- *   en componentes hijos como Navigation.
- *
- * @exports AuthProvider  - Componente proveedor que envuelve la aplicación.
- * @exports useAuth       - Hook personalizado para consumir el contexto.
- * @exports api           - Instancia de Axios preconfigurada con JWT interceptor.
+ * Contexto global de autenticación para MusicStream.
+ * Gestiona el estado del usuario, persistencia de tokens y peticiones protegidas.
  */
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
-
-// ==================== INTERFACES ====================
 
 interface User {
   id?: number;
@@ -30,7 +12,7 @@ interface User {
   avatarUrl?: string;
   isArtist: boolean;
   isAdmin: boolean;
-  createdAt?: string; // Añadido para mostrar "Miembro desde..."
+  createdAt?: string;
 }
 
 interface RegisterData {
@@ -52,8 +34,7 @@ interface AuthContextType {
   updateProfile: (name: string, avatarUrl: string) => Promise<void>;
 }
 
-// ==================== CONFIGURACIÓN DE AXIOS ====================
-
+// Configuración de instancia base de Axios
 const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:9000';   
 const API_BASE = `${BACKEND_URL}/api`;
 
@@ -65,6 +46,7 @@ export const api = axios.create({
   timeout: 10000,
 });
 
+// Interceptor para adjuntar el JWT en cada petición
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token && config.headers) {
@@ -75,10 +57,7 @@ api.interceptors.request.use((config) => {
   return Promise.reject(error);
 });
 
-// ==================== CONTEXTO ====================
-
-// Jackson serializes boolean fields starting with 'is' without the prefix:
-// isAdmin → admin, isArtist → artist. This helper normalizes the response.
+/** Normaliza la respuesta del backend (mapea campos de serialización de Jackson) */
 function normalizeUser(data: any): User {
   return {
     id:        data.id,
@@ -101,7 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkAuth();
   }, []);
 
-  // Verificar sesión actual
+  // Verifica si existe una sesión válida al cargar la aplicación
   const checkAuth = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -121,7 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Iniciar sesión
+  // Inicia sesión y almacena el token JWT
   const login = async (email: string, password: string) => {
     try {
       const res = await api.post('/auth/login', { email, password });
@@ -134,15 +113,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (err.response?.data?.message) {
         errorMessage = err.response.data.message;
       } else if (err.response?.status === 401) {
-        errorMessage = 'Email o contraseña incorrectos';
+        errorMessage = 'Credenciales incorrectas';
       } else if (!err.response) {
-        errorMessage = 'No se pudo conectar con el servidor.';
+        errorMessage = 'Servidor no disponible';
       }
       throw new Error(errorMessage);
     }
   };
 
-  // Registrar usuario
+  // Registra un nuevo usuario y auto-loguea si el registro es exitoso
   const register = async (data: RegisterData) => {
     try {
       const res = await api.post('/auth/register', data);
@@ -155,13 +134,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (err.response?.data?.message) {
         errorMessage = err.response.data.message;
       } else if (!err.response) {
-        errorMessage = 'No se pudo conectar con el servidor';
+        errorMessage = 'Servidor no disponible';
       }
       throw new Error(errorMessage);
     }
   };
 
-  // Cierre de sesión
+  // Elimina el token y limpia el estado global
   const logout = async () => {
     try {
       await api.post('/auth/logout');
@@ -173,11 +152,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  /**
-   * ACTUALIZAR PERFIL (PUT /api/users/me)
-   * Envía los datos al backend y actualiza el estado global del usuario
-   */
+  // Actualiza los datos de perfil del usuario autenticado
   const updateProfile = async (name: string, avatarUrl: string) => {
+
     try {
       const res = await api.put('/users/me', { 
         name: name.trim(), 

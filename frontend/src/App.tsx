@@ -1,10 +1,6 @@
 /**
- * @file App.tsx
- * @description Componente raíz de MusicStream.
- *
- * Define el enrutamiento principal de la aplicación con React Router.
- * Muestra la barra de navegación en todas las rutas excepto en /auth.
- * El reproductor (MusicPlayer) se renderiza de forma global en el footer.
+ * Componente raíz de MusicStream.
+ * Configura el enrutamiento global y la visibilidad de componentes comunes.
  */
 import { useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
@@ -26,11 +22,13 @@ export default function App() {
   const { colors } = useTheme();
   const location = useLocation();
 
+  // Lógica para ocultar navegación y reproductor en rutas específicas
   const showNavigation = location.pathname !== "/auth";
   const showPlayer =
     location.pathname !== "/auth" &&
     location.pathname !== "/admin" &&
     location.pathname !== "/artist-dashboard";
+
 
   return (
     <div

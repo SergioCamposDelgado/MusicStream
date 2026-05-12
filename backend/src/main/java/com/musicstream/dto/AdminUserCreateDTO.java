@@ -14,19 +14,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class AdminUserCreateDTO {
 
-    @NotBlank(message = "El nombre es obligatorio")
-    @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
-    private String name;
+  @NotBlank(message = "El nombre es obligatorio")
+  @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
+  private String name;
 
-    @NotBlank(message = "El email es obligatorio")
-    @Email(message = "Formato de email inválido")
-    private String email;
+  @NotBlank(message = "El email es obligatorio")
+  @Email(message = "Formato de email inválido")
+  private String email;
 
-    @NotBlank(message = "La contraseña es obligatoria")
-    @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
-    private String password;
+  @NotBlank(message = "La contraseña es obligatoria")
+  @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
+  private String password;
 
-    private boolean isArtist;
-    private boolean isAdmin;
-    private boolean locked;
+  private boolean isArtist;
+  private boolean isAdmin;
+  private boolean locked;
 }

@@ -1,21 +1,8 @@
 /**
- * @file Auth.tsx
- * @description Página de autenticación de MusicStream (login y registro).
- *
- * Diseño premium con layout split-panel (dos columnas en desktop):
- * - Panel izquierdo: branding, estadísticas y visualizador de ondas.
- * - Panel derecho: formulario con glassmorphism, inputs con floating labels,
- *   animaciones de fondo y soporte para modo claro/oscuro.
- *
- * Componentes internos:
- * - `MusicParticle` — Partícula animada de nota musical que flota en el fondo.
- * - `FloatingInput`  — Input con etiqueta flotante, icono y soporte de tema.
- * - `Auth`           — Componente principal exportado, contiene toda la lógica
- *                      de formulario (login / registro), validación y llamadas al API.
- *
- * El token JWT recibido del backend se guarda en localStorage a través del
- * contexto `useAuth`, que también actualiza el estado global del usuario.
+ * Página de autenticación (Login y Registro) de MusicStream.
+ * Implementa una interfaz dividida con branding y formularios con validación.
  */
+
 import { useState } from "react";
 import { useTheme } from "../context/ThemeContext";
 import { useNavigate } from "react-router-dom";

@@ -1,3 +1,7 @@
+/**
+ * Página principal de la aplicación.
+ * Muestra el Hero section, artistas destacados y las últimas subidas multimedia.
+ */
 import { Play, Music2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";

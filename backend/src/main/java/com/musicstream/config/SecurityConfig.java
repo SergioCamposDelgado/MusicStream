@@ -1,8 +1,9 @@
 package com.musicstream.config;
 
-import com.musicstream.service.CustomUserDetailsService;
 import com.musicstream.security.JwtAuthenticationFilter;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,121 +13,106 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.beans.factory.annotation.Value;
-
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final CustomUserDetailsService userDetailsService;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  private final UserDetailsService userDetailsService;
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Value("${app.cors.allowed-origins}")
-    private List<String> allowedOrigins;
+  @Value("${app.cors.allowed-origins}")
+  private List<String> allowedOrigins;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            // 1. Habilitamos CORS usando el bean corsConfigurationSource definido abajo
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+        // Configuración de CORS basada en el bean definido en esta clase
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        // Deshabilitar CSRF para APIs stateless
+        .csrf(csrf -> csrf.disable())
+        .authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers(
+                        "/api/auth/register",
+                        "/api/auth/login",
+                        "/api/auth/me",
+                        "/api/auth/logout",
+                        "/error",
+                        "/actuator/health")
+                    .permitAll()
+                    // Acceso público a recursos multimedia
+                    .requestMatchers("/api/files/images/**")
+                    .permitAll()
+                    .requestMatchers("/api/files/audio/**")
+                    .permitAll()
+                    // Rutas protegidas por rol y autenticación
+                    .requestMatchers("/api/files/upload/**")
+                    .authenticated()
+                    .requestMatchers("/api/users/**")
+                    .authenticated()
+                    .requestMatchers("/api/admin/**")
+                    .hasRole("ADMIN")
+                    .requestMatchers("/api/artist/**")
+                    .hasRole("ARTIST")
+                    .anyRequest()
+                    .authenticated())
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .formLogin(form -> form.disable())
+        .httpBasic(basic -> basic.disable())
+        .logout(logout -> logout.disable())
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .headers(
+            headers ->
+                headers
+                    .frameOptions(frame -> frame.deny())
+                    .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'")));
 
-            // 2. Desactivamos CSRF ya que estamos usando cookies con SameSite/Sessión controlada o JWT
-            .csrf(csrf -> csrf.disable())
+    return http.build();
+  }
 
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    "/api/auth/register",
-                    "/api/auth/login",
-                    "/api/auth/me",
-                    "/api/auth/logout",
-                    "/error",
-                    "/actuator/health"
-                ).permitAll()
+  // Configuración de CORS nativo para permitir peticiones externas
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration config = new CorsConfiguration();
 
-                // Servir archivos públicamente (imágenes y audio) sin necesidad de token
-                // para que <img src="..."> y <audio src="..."> funcionen en el navegador
-                .requestMatchers("/api/files/images/**").permitAll()
-                .requestMatchers("/api/files/audio/**").permitAll()
+    config.setAllowedOrigins(allowedOrigins);
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
+    config.setAllowedHeaders(
+        List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
+    config.setAllowCredentials(true);
+    config.setMaxAge(3600L);
 
-                // Subir archivos requiere estar autenticado
-                .requestMatchers("/api/files/upload/**").authenticated()
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config);
+    return source;
+  }
 
-                .requestMatchers("/api/users/**").authenticated()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/artist/**").hasRole("ARTIST")
+  @Bean
+  public AuthenticationProvider authenticationProvider() {
+    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
+    authProvider.setPasswordEncoder(passwordEncoder());
+    return authProvider;
+  }
 
-                .anyRequest().authenticated()
-            )
+  @Bean
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+      throws Exception {
+    return config.getAuthenticationManager();
+  }
 
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-
-            .formLogin(form -> form.disable())
-            .httpBasic(basic -> basic.disable())
-            .logout(logout -> logout.disable())
-
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-
-            .headers(headers -> headers
-                .frameOptions(frame -> frame.deny())
-                // Ajustamos CSP para permitir las conexiones de desarrollo si fuera necesario
-                .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'"))
-            );
-
-        return http.build();
-    }
-
-    // Bean de configuración de CORS nativo de Spring Security
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        
-        // Origen permitido (Configurado en application.properties)
-        config.setAllowedOrigins(allowedOrigins);
-        
-        // Métodos permitidos (Importante incluir PUT y OPTIONS)
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
-        
-        // Cabeceras permitidas
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
-        
-        // Permitir envío de Cookies (JSESSIONID)
-        config.setAllowCredentials(true);
-        
-        // Tiempo que el navegador guarda la configuración de CORS para no repetir OPTIONS
-        config.setMaxAge(3600L);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
-    }
-
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(12);
-    }
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder(12);
+  }
 }
