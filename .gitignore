@@ -32,3 +32,9 @@ build/
 # Crash logs
 hs_err_pid*
 replay_pid*
+
+# Docker and Proxy Data
+proxy/
+*.sqlite
+*.sqlite-journal
+
