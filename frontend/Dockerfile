@@ -11,7 +11,7 @@ RUN npm run build
 
 # Etapa 2: Servidor de producción
 FROM nginx:stable-alpine
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /app/build /usr/share/nginx/html
 # Configuración básica de Nginx para SPA (React Router)
 RUN echo 'server { \
     listen 80; \
