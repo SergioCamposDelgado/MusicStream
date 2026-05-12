@@ -98,9 +98,11 @@
 
 <build>
     <plugins>
+
         <plugin>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-maven-plugin</artifactId>
+
             <configuration>
                 <!-- ¡Aquí va el cambio clave! Usa el nombre completo de tu clase nueva -->
                 <mainClass>com.musicstream.MusicStreamApplication</mainClass>
